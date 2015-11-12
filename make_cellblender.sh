@@ -57,3 +57,9 @@ cd ../..
 rm -fr mcell-3.3 v3.3.zip
 mkdir bin
 mv mcell bin
+
+cd bng
+mkdir bin
+make
+make install
+make clean
