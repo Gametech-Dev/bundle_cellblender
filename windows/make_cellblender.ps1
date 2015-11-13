@@ -31,6 +31,13 @@ Invoke-WebRequest $cellblender_download -Outfile $cellblender_destination
 Unzip $cellblender_destination $addon_dir
 mv cellblender-development cellblender
 $cellblender_dir = "$addon_dir\cellblender"
+
+cd "$cellblender_dir\bng"
+& 'C:\Program Files\7-Zip\7z.exe' x pyinstaller2.zip
+C:\tools\python2\python.exe .\pyinstaller2\pyinstaller.py sbml2json.spec
+mkdir bin
+cp dist\sbml2json bin\sbml2json.exe
+
 cd $cellblender_dir
 
 # Get and build MCell (for Windows this time... using MingW)
@@ -62,6 +69,9 @@ rm -Force "$project_dir\blender.zip"
 rm -Force "$cellblender_dir\mcell.zip"
 rm -Force "$cellblender_dir\.gitignore"
 rm -Force -Recurse "$project_dir\test_suite"
+rm -Force -Recurse "$cellblender_dir\bng\dist"
+rm -Force -Recurse "$cellblender_dir\bng\build"
+rm -Force -Recurse "$cellblender_dir\pyinstaller2"
 
 # Zip up modified blender directory
 $final_zip = "$project_dir\blender_final.zip"
