@@ -1,6 +1,6 @@
 ﻿# Change the project dir as needed
 $project_dir = "$home\bundle_cellblender\windows"
-$blender_source = "http://ftp.halifax.rwth-aachen.de/blender/release/Blender2.76/blender-2.76b-windows64.zip"
+$blender_download = "http://ftp.halifax.rwth-aachen.de/blender/release/Blender2.76/blender-2.76b-windows64.zip"
 $blender_destination = "$projectdir\blender.zip"
 
 # TODO: Just use 7zip to unzip, since we already need it to zip
@@ -18,16 +18,16 @@ cd $project_dir
 C:\Users\vagrant\.babun\cygwin\bin\bash.exe -login $project_dir\make_mcell.sh
 
 # Get Blender
-Invoke-WebRequest $blender_source -OutFile $blender_destination
+Invoke-WebRequest $blender_download -OutFile $blender_destination
 Unzip $blender_destination $project_dir
 $blender_dir = "$project_dir\blender-2.76b-windows64"
 $addon_dir = "$blender_dir\2.76\scripts\addons"
 cd $addon_dir
 
 # Get CellBlender
-$cellblender_source = "https://github.com/mcellteam/cellblender/archive/development.zip"
+$cellblender_download = "https://github.com/mcellteam/cellblender/archive/development.zip"
 $cellblender_destination = "$addon_dir\cellblender.zip"
-Invoke-WebRequest $cellblender_source -Outfile $cellblender_destination
+Invoke-WebRequest $cellblender_download -Outfile $cellblender_destination
 Unzip $cellblender_destination $addon_dir
 mv cellblender-development cellblender
 $cellblender_dir = "$addon_dir\cellblender"
@@ -59,6 +59,9 @@ rm -Force -Recurse "$cellblender_dir\mcell"
 rm -Force -Recurse "$project_dir\mcell-3.3"
 rm -Force "$project_dir\v3.3.zip"
 rm -Force "$project_dir\blender.zip"
+rm -Force "$cellblender_dir\mcell.zip"
+rm -Force "$cellblender_dir\.gitignore"
+rm -Force -Recurse "$project_dir\test_suite"
 
 # Zip up modified blender directory
 $final_zip = "$project_dir\blender_final.zip"
