@@ -66,7 +66,7 @@ rm -Force -Recurse "$cellblender_dir\bng\build"
 rm -Force -Recurse "$cellblender_dir\pyinstaller2"
 
 # Zip up modified blender directory
-$final_zip = "$project_dir\cellblender_1.1_bundle.zip"
+$final_zip = "$project_dir\cellblender1.1_bundle_windows.zip"
 & 'C:\Program Files\7-Zip\7z.exe' a -mx=9 $final_zip $blender_dir
 
 cd $project_dir
