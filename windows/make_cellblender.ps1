@@ -59,10 +59,6 @@ gcc -mconsole -std=c99 -O3 -fno-schedule-insns2 -Wall -Wshadow -o mcell.exe *.c
 mkdir "$cellblender_dir\bin"
 cp "$mcell_build_dir\mcell.exe" "$cellblender_dir\bin"
 
-# Install Beilin's cellblender-plot (we need a better name for this).
-cd $cellblender_dir\data_plotters
-git clone https://github.com/mcellteam/cellblender-plot
-
 # Some cleanup
 rm -Force -Recurse "$cellblender_dir\mcell"
 rm -Force -Recurse "$project_dir\mcell-3.3"
