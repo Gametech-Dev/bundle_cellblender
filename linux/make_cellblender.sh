@@ -5,6 +5,7 @@
 
 # Echo every command
 set -o verbose 
+# Quit if there's an error
 set -e
 
 project_dir=$(pwd)
@@ -32,12 +33,15 @@ rm -fr $blender_tar
 # startup.blend too.
 #cp -fr config $blender_dir/2.76
 cd $blender_dir_full/2.76/scripts/addons
-#git clone https://github.com/mcellteam/cellblender
-wget https://github.com/mcellteam/cellblender/archive/development.zip
-unzip development.zip
-rm development.zip
-mv cellblender-development cellblender
+git clone https://github.com/mcellteam/cellblender
+#wget https://github.com/mcellteam/cellblender/archive/development.zip
+#unzip development.zip
+#rm development.zip
+#mv cellblender-development cellblender
 cd cellblender
+git checkout development
+git submodule init
+git submodule update
 # These changes seem to be needed for the versions of python and gcc that come
 # with ubuntu.
 sed -i 's/python3\.3/python3/' io_mesh_mcell_mdl/makefile
@@ -46,6 +50,7 @@ make
 rm cellblender.zip
 rm cellblender
 rm .gitignore
+rm -fr .git
 
 # Get and build MCell
 wget https://github.com/mcellteam/mcell/archive/v3.3.zip
