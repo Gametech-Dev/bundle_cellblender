@@ -16,17 +16,24 @@ $addon_dir = "$blender_dir\2.76\scripts\addons"
 cd $addon_dir
 
 # Get CellBlender
-$cellblender_download_url = "https://github.com/mcellteam/cellblender/archive/development.zip"
-$cellblender_zip = "$addon_dir\cellblender.zip"
-Invoke-WebRequest $cellblender_download_url -Outfile $cellblender_zip
-& 'C:\Program Files\7-Zip\7z.exe' x $cellblender_zip -o"$addon_dir"
-mv cellblender-development cellblender
+#$cellblender_download_url = "https://github.com/mcellteam/cellblender/archive/development.zip"
+$cellblender_url = "https://github.com/mcellteam/cellblender"
+#$cellblender_zip = "$addon_dir\cellblender.zip"
+#Invoke-WebRequest $cellblender_download_url -Outfile $cellblender_zip
+#& 'C:\Program Files\7-Zip\7z.exe' x $cellblender_zip -o"$addon_dir"
+#mv cellblender-development cellblender
+git clone -q $cellblender_url
+cd cellblender
+git checkout development
+git submodule init
+git submodule update
 $cellblender_dir = "$addon_dir\cellblender"
 
 # Build sbml2json for bng importer
 cd "$cellblender_dir\bng"
 & 'C:\Program Files\7-Zip\7z.exe' x pyinstaller2.zip
-C:\tools\python2\python.exe .\pyinstaller2\pyinstaller.py sbml2json.spec
+#C:\tools\python2\python.exe .\pyinstaller2\pyinstaller.py sbml2json.spec
+python2.7.exe .\pyinstaller2\pyinstaller.py sbml2json.spec
 mkdir bin
 cp dist\sbml2json bin\sbml2json.exe
 
