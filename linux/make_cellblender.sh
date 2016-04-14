@@ -54,19 +54,20 @@ rm cellblender
 rm .gitignore
 rm -fr .git
 
+mcell_dir_name="mcell-master"
+mcell_zip_name="master.zip"
 # Get and build MCell
-wget https://github.com/mcellteam/mcell/archive/v3.3.zip
-unzip v3.3.zip
-cd mcell-3.3/src
-./bootstrap
-cd ..
+#wget https://github.com/mcellteam/mcell/archive/v3.3.zip
+wget https://github.com/mcellteam/mcell/archive/$mcell_zip_name
+unzip $mcell_zip_name
+cd $mcell_dir_name
 mkdir build
 cd build
-../src/configure "CFLAGS=-O3 -static"
+cmake ..
 make
 mv mcell ../..
 cd ../..
-rm -fr mcell-3.3 v3.3.zip
+rm -fr $mcell_dir_name $mcell_zip_name
 mkdir bin
 mv mcell bin
 
