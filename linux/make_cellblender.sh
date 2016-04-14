@@ -8,14 +8,16 @@ set -o verbose
 # Quit if there's an error
 set -e
 
+version="2.77"
+minor="a"
 project_dir=$(pwd)
-blender_dir=blender-2.76b-linux-glibc211-x86_64
-blender_dir_full="$project_dir/blender-2.76b-linux-glibc211-x86_64"
+blender_dir="blender-$version$minor-linux-glibc211-x86_64"
+blender_dir_full="$project_dir/blender-$version$minor-linux-glibc211-x86_64"
 blender_tar="$blender_dir.tar"
 blender_bz2="$blender_tar.bz2"
-mirror1="http://ftp.halifax.rwth-aachen.de/blender/release/Blender2.76/$blender_bz2";
-mirror2="http://ftp.nluug.nl/pub/graphics/blender/release/Blender2.76/$blender_bz2";
-mirror3="http://download.blender.org/release/Blender2.76/$blender_bz2";
+mirror1="http://ftp.halifax.rwth-aachen.de/blender/release/Blender$version/$blender_bz2";
+mirror2="http://ftp.nluug.nl/pub/graphics/blender/release/Blender$version/$blender_bz2";
+mirror3="http://download.blender.org/release/Blender$version/$blender_bz2";
 mirrors=($mirror1 $mirror2 $mirror3);
 random=$(shuf -i 0-2 -n 1);
 
@@ -31,8 +33,8 @@ rm -fr $blender_tar
 # Set up CellBlender
 # Need to add userpref.blend, so that CB is enabled by default. Maybe add
 # startup.blend too.
-#cp -fr config $blender_dir/2.76
-cd $blender_dir_full/2.76/scripts/addons
+#cp -fr config $blender_dir/$version
+cd $blender_dir_full/$version/scripts/addons
 git clone https://github.com/mcellteam/cellblender
 #wget https://github.com/mcellteam/cellblender/archive/development.zip
 #unzip development.zip
