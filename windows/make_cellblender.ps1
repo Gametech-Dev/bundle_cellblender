@@ -8,8 +8,7 @@ $blender_zip = "$projectdir\blender.zip"
 cd $project_dir
 
 # Ugh. We have to build MCell with cygwin first to create files for the Windows build
-C:\Users\vagrant\.babun\cygwin\bi
-n\dos2unix.exe $project_dir\make_mcell.sh
+C:\Users\vagrant\.babun\cygwin\bin\dos2unix.exe $project_dir\make_mcell.sh
 C:\Users\vagrant\.babun\cygwin\bin\bash.exe -login $project_dir\make_mcell.sh
 
 # Get Blender
@@ -44,13 +43,13 @@ cp dist\sbml2json bin\sbml2json.exe
 cd $cellblender_dir
 
 # Get and build MCell (for Windows this time... using MingW)
-$mcell_download_url = "https://github.com/mcellteam/mcell/archive/v3.3.zip"
+$mcell_download_url = "https://github.com/mcellteam/mcell/archive/master.zip"
 $mcell_zip = "$cellblender_dir\mcell.zip"
 Invoke-WebRequest $mcell_download_url -OutFile $mcell_zip
 & 'C:\Program Files\7-Zip\7z.exe' x $mcell_zip -o"$cellblender_dir"
-mv mcell-3.3 mcell
+mv mcell-master mcell
 $mcell_build_dir =  "$cellblender_dir\mcell\src"
-$cygwin_build_dir = "$project_dir\mcell-3.3\build"
+$cygwin_build_dir = "$project_dir\mcell-master\build"
 
 cp $cygwin_build_dir\config.h $mcell_build_dir
 cp $cygwin_build_dir\version.h $mcell_build_dir
@@ -65,8 +64,8 @@ cp "$mcell_build_dir\mcell.exe" "$cellblender_dir\bin"
 
 # Some cleanup
 rm -Force -Recurse "$cellblender_dir\mcell"
-rm -Force -Recurse "$project_dir\mcell-3.3"
-rm -Force "$project_dir\v3.3.zip"
+rm -Force -Recurse "$project_dir\mcell-master"
+rm -Force "$project_dir\master.zip"
 rm -Force "$project_dir\blender.zip"
 rm -Force "$cellblender_dir\mcell.zip"
 rm -Force "$cellblender_dir\.gitignore"
