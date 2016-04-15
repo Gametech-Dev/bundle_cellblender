@@ -1,19 +1,22 @@
 ﻿# Change the project dir as needed
+$bl_version = "2.77"
+$bl_minor = "a"
 $project_dir = "$home\bundle_cellblender\windows"
-$blender_download_url = "http://ftp.halifax.rwth-aachen.de/blender/release/Blender2.76/blender-2.76b-windows64.zip"
+$blender_download_url = "http://ftp.halifax.rwth-aachen.de/blender/release/Blender$bl_version/blender-$bl_version$bl_minor-windows64.zip"
 $blender_zip = "$projectdir\blender.zip"
 
 cd $project_dir
 
 # Ugh. We have to build MCell with cygwin first to create files for the Windows build
-C:\Users\vagrant\.babun\cygwin\bin\dos2unix.exe $project_dir\make_mcell.sh
+C:\Users\vagrant\.babun\cygwin\bi
+n\dos2unix.exe $project_dir\make_mcell.sh
 C:\Users\vagrant\.babun\cygwin\bin\bash.exe -login $project_dir\make_mcell.sh
 
 # Get Blender
 Invoke-WebRequest $blender_download_url -OutFile $blender_zip
 & 'C:\Program Files\7-Zip\7z.exe' x $blender_zip -o"$project_dir"
-$blender_dir = "$project_dir\blender-2.76b-windows64"
-$addon_dir = "$blender_dir\2.76\scripts\addons"
+$blender_dir = "$project_dir\blender-$bl_version$bl_minor-windows64"
+$addon_dir = "$blender_dir\$bl_version\scripts\addons"
 cd $addon_dir
 
 # Get CellBlender
