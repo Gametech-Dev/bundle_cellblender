@@ -5,7 +5,8 @@ $blender_zip = "$projectdir\blender.zip"
 
 cd $project_dir
 
-# Ugh. We have to build MCell with cygwin first to create files for the Windows buildd
+# Ugh. We have to build MCell with cygwin first to create files for the Windows build
+C:\Users\vagrant\.babun\cygwin\bin\dos2unix.exe $project_dir\make_mcell.sh
 C:\Users\vagrant\.babun\cygwin\bin\bash.exe -login $project_dir\make_mcell.sh
 
 # Get Blender
