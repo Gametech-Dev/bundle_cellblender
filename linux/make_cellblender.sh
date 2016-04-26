@@ -32,7 +32,7 @@ rm -fr $blender_tar
 
 # Set up GAMer
 cd $blender_dir_full/$version
-#git clone https://github.com/mcellteam/gamer
+git clone https://github.com/mcellteam/gamer
 cd gamer
 sed -i 's/^INSTALL_DIR.*/INSTALL_DIR = ../' makefile 
 make
@@ -41,9 +41,10 @@ cd ..
 rm -fr gamer
 
 # Set up CellBlender
-# Need to add userpref.blend, so that CB is enabled by default. Maybe add
-# startup.blend too.
-#cp -fr config $blender_dir/$version
+# Adding userpref.blend so that CB is enabled by default. Maybe add
+# startup.blend too to give user a better default layout.
+cd $project_dir
+cp -fr config $blender_dir/$version
 cd $blender_dir_full/$version/scripts/addons
 git clone https://github.com/mcellteam/cellblender
 cd cellblender
