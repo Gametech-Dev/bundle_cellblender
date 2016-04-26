@@ -41,8 +41,8 @@ cd ..
 rm -fr gamer
 
 # Set up CellBlender
-# Adding userpref.blend so that CB is enabled by default. Maybe add
-# startup.blend too to give user a better default layout.
+# Adding userpref.blend so that CB is enabled by default and startup.blend to
+# give user a better default layout.
 cd $project_dir
 cp -fr config $blender_dir/$version
 cd $blender_dir_full/$version/scripts/addons
