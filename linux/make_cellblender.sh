@@ -30,16 +30,22 @@ bunzip2 $blender_bz2
 tar xf $blender_tar
 rm -fr $blender_tar
 
+# Set up GAMer
+cd $blender_dir_full/$version
+#git clone https://github.com/mcellteam/gamer
+cd gamer
+sed -i 's/^INSTALL_DIR.*/INSTALL_DIR = ../' makefile 
+make
+make install
+cd ..
+rm -fr gamer
+
 # Set up CellBlender
 # Need to add userpref.blend, so that CB is enabled by default. Maybe add
 # startup.blend too.
 #cp -fr config $blender_dir/$version
 cd $blender_dir_full/$version/scripts/addons
 git clone https://github.com/mcellteam/cellblender
-#wget https://github.com/mcellteam/cellblender/archive/development.zip
-#unzip development.zip
-#rm development.zip
-#mv cellblender-development cellblender
 cd cellblender
 git checkout development
 git submodule init
