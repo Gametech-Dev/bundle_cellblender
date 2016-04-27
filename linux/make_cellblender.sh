@@ -34,7 +34,9 @@ rm -fr $blender_tar
 cd $blender_dir_full/$version
 git clone https://github.com/mcellteam/gamer
 cd gamer
-sed -i 's/^INSTALL_DIR.*/INSTALL_DIR = ../' makefile 
+sed -i 's/LDFLAGS :=.*/LDFLAGS = ""/' makefile 
+sed -i 's/export PYTHON :=.*/export PYTHON = \/usr\/bin\/python3\.4/' makefile
+sed -i 's/INSTALL_DIR :=.*/INSTALL_DIR = ../' makefile 
 make
 make install
 cd ..
