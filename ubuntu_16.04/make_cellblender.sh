@@ -94,4 +94,4 @@ make install
 make clean
 
 cd $project_dir
-zip -r cellblender1.1_bundle_linux.zip $blender_dir_full
+zip -r cellblender1.1_bundle_linux.zip $blender_dir
