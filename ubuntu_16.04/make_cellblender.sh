@@ -18,12 +18,13 @@ blender_bz2="$blender_tar.bz2"
 mirror1="http://ftp.halifax.rwth-aachen.de/blender/release/Blender$version/$blender_bz2";
 mirror2="http://ftp.nluug.nl/pub/graphics/blender/release/Blender$version/$blender_bz2";
 mirror3="http://download.blender.org/release/Blender$version/$blender_bz2";
-mirrors=($mirror1 $mirror2 $mirror3);
-random=$(shuf -i 0-2 -n 1);
+mirror4="http://www.mcell.org/download/files/$blender_bz2";
+mirrors=($mirror1 $mirror2 $mirror3 $mirror4);
+random=$(shuf -i 0-3 -n 1);
 
 # Grab Blender and extract it
 #selected_mirror=${mirrors[$random]}
-selected_mirror=${mirrors[$1]}
+selected_mirror=${mirrors[3]}
 echo $selected_mirror
 wget $selected_mirror
 bunzip2 $blender_bz2
