@@ -8,8 +8,8 @@ set -o verbose
 # Quit if there's an error
 set -e
 
-version="2.77"
-minor="a"
+version="2.78"
+minor=""
 project_dir=$(pwd)
 blender_dir="blender-$version$minor-linux-glibc211-x86_64"
 blender_dir_full="$project_dir/blender-$version$minor-linux-glibc211-x86_64"
