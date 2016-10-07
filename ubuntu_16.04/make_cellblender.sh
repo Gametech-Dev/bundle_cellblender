@@ -31,14 +31,8 @@ bunzip2 $blender_bz2
 tar xf $blender_tar
 rm -fr $blender_tar
 
-# get matplotlib recipe that doesn't use qt. re-enable tkagg
-#git clone https://github.com/salford-systems/conda-recipes
-#cp -fr conda-recipes/matplotlib-nogui matplotlib-noqt
-#cd matplotlib-noqt
-#sed -i "s/^tkagg = False/tkagg = True/" build.sh
-#sed -i "s/name: matplotlib-nogui/name: matplotlib-noqt/" meta.yaml
-#sed -i "s/libgcc-5/libgcc/" meta.yaml
-#cd ..
+# get matplotlib recipe that doesn't use qt
+git clone https://github.com/jczech/matplotlib-feedstock
 
 # get miniconda, add custom matplotlib with custom recipe
 wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
@@ -46,10 +40,8 @@ bash Miniconda3-latest-Linux-x86_64.sh -b -p ./miniconda3
 cd miniconda3/bin
 ./conda install -y conda-build
 ./conda install -y nomkl
-./conda install -y libgcc
-#./conda build ../../matplotlib-noqt
-#./conda install --use-local -y matplotlib-noqt
-./conda install -y matplotlib
+./conda build ~/matplotlib-feedstock/recipe --numpy 1.11
+./conda install --use-local -y matplotlib
 ./conda clean -y --all
 
 # remove existing python, add our new custom version
@@ -61,9 +53,8 @@ cp -fr ../../miniconda3/lib python
 
 # cleanup miniconda stuff
 rm -fr ../../miniconda3
+rm -fr ../../matplotlib-feedstock
 rm ../../Miniconda3-latest-Linux-x86_64.sh
-#rm -fr ../../conda-recipes
-#rm -fr ../../matplotlib-noqt
 
 # Set up GAMer
 cd $blender_dir_full/$version
