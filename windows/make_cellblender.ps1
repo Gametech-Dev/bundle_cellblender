@@ -1,6 +1,6 @@
 ﻿# Change the project dir as needed
-$bl_version = "2.77"
-$bl_minor = "a"
+$bl_version = "2.78"
+$bl_minor = ""
 $project_dir = "$home\bundle_cellblender\windows"
 $blender_download_url = "http://ftp.halifax.rwth-aachen.de/blender/release/Blender$bl_version/blender-$bl_version$bl_minor-windows64.zip"
 $blender_zip = "$projectdir\blender.zip"
@@ -43,13 +43,13 @@ cp dist\sbml2json bin\sbml2json.exe
 cd $cellblender_dir
 
 # Get and build MCell (for Windows this time... using MingW)
-$mcell_download_url = "https://github.com/mcellteam/mcell/archive/master.zip"
+$mcell_download_url = "https://github.com/mcellteam/mcell/archive/v3.4.zip"
 $mcell_zip = "$cellblender_dir\mcell.zip"
 Invoke-WebRequest $mcell_download_url -OutFile $mcell_zip
 & 'C:\Program Files\7-Zip\7z.exe' x $mcell_zip -o"$cellblender_dir"
-mv mcell-master mcell
+mv mcell-3.4 mcell
 $mcell_build_dir =  "$cellblender_dir\mcell\src"
-$cygwin_build_dir = "$project_dir\mcell-master\build"
+$cygwin_build_dir = "$project_dir\mcell-3.4\build"
 
 cp $cygwin_build_dir\config.h $mcell_build_dir
 cp $cygwin_build_dir\version.h $mcell_build_dir
