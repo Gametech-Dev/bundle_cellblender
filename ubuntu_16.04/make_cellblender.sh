@@ -38,6 +38,7 @@ git clone https://github.com/jczech/matplotlib-feedstock
 wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh -b -p ./miniconda3
 cd miniconda3/bin
+PATH=$PATH:~/miniconda3/bin
 ./conda install -y conda-build
 ./conda install -y nomkl
 ./conda build ~/matplotlib-feedstock/recipe --numpy 1.11
