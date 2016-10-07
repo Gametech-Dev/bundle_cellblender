@@ -90,11 +90,10 @@ rm cellblender
 rm .gitignore
 rm -fr .git
 
-mcell_dir_name="mcell-3.3"
+mcell_dir_name="mcell-3.4"
 #mcell_zip_name="master.zip"
-mcell_zip_name="v3.3.zip"
+mcell_zip_name="v3.4.zip"
 # Get and build MCell
-#wget https://github.com/mcellteam/mcell/archive/v3.3.zip
 wget https://github.com/mcellteam/mcell/archive/$mcell_zip_name
 unzip $mcell_zip_name
 cd $mcell_dir_name
