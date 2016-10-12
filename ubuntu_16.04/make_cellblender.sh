@@ -33,7 +33,7 @@ tar xf $blender_tar
 rm -fr $blender_tar
 
 # get matplotlib recipe that doesn't use qt
-#git clone https://github.com/jczech/matplotlib-feedstock
+git clone https://github.com/jczech/matplotlib-feedstock
 
 # get miniconda, add custom matplotlib with custom recipe
 wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
