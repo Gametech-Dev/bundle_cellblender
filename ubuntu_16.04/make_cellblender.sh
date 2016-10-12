@@ -12,6 +12,7 @@ version="2.78"
 minor=""
 project_dir=$(pwd)
 blender_dir="blender-$version$minor-linux-glibc211-x86_64"
+miniconda_bins="$project_dir/miniconda3/bin"
 blender_dir_full="$project_dir/blender-$version$minor-linux-glibc211-x86_64"
 blender_tar="$blender_dir.tar"
 blender_bz2="$blender_tar.bz2"
@@ -24,7 +25,7 @@ random=$(shuf -i 0-3 -n 1);
 
 # Grab Blender and extract it
 #selected_mirror=${mirrors[$random]}
-selected_mirror=${mirrors[2]}
+selected_mirror=${mirrors[3]}
 echo $selected_mirror
 wget $selected_mirror
 bunzip2 $blender_bz2
@@ -32,16 +33,16 @@ tar xf $blender_tar
 rm -fr $blender_tar
 
 # get matplotlib recipe that doesn't use qt
-git clone https://github.com/jczech/matplotlib-feedstock
+#git clone https://github.com/jczech/matplotlib-feedstock
 
 # get miniconda, add custom matplotlib with custom recipe
 wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh -b -p ./miniconda3
-cd miniconda3/bin
-PATH=$PATH:~/miniconda3/bin
+cd $miniconda_bins
+PATH=$PATH:$miniconda_bins
 ./conda install -y conda-build
 ./conda install -y nomkl
-./conda build ~/matplotlib-feedstock/recipe --numpy 1.11
+./conda build ../../matplotlib-feedstock/recipe --numpy 1.11
 ./conda install --use-local -y matplotlib
 ./conda clean -y --all
 
