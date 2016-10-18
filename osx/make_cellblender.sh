@@ -50,10 +50,6 @@ PATH=$PATH:$miniconda_dir/bin
 # remove existing python, add our new custom version
 cd $blender_dir_full/blender.app/Contents/Resources/$version/
 cp -fr $miniconda_dir/ python/
-#rm -fr python
-#mkdir -p python/bin
-#cp $miniconda_dir/bin/python3.5m python/bin
-#cp -fr $miniconda_dir/lib python
 
 # cleanup miniconda stuff
 rm -fr $miniconda_dir
@@ -64,10 +60,6 @@ rm $project_dir/$miniconda_script
 cd $blender_dir_full/blender.app/Contents/Resources/$version
 git clone https://github.com/jczech/gamer
 cd gamer
-#sed -i 's/LDFLAGS :=.*/LDFLAGS LDFLAGS := -L\/usr\/local\/Cellar\/python3\/3\.5\.2_3\/Frameworks\/Python\.framework\/Versions\/3\.5\/lib/' makefile 
-#sed -i 's/export PYTHON :=.*/export PYTHON := \/usr\/local\/bin\/python3\.5/' makefile
-#sed -i 's/INSTALL_DIR :=.*/INSTALL_DIR := ../' makefile 
-#sed -i 's/3.4/3.5/' makefile 
 make
 make install
 cd ..
