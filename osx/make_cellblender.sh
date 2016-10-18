@@ -1,43 +1,46 @@
 #!/bin/bash
 
-# This was designed to be used with Ubuntu 16.04. It probably needs to be
-# tweaked to work with other distros.
+# This was designed to be used with MacOS, but isn't currently functional.
 
 # Echo every command
 set -o verbose 
 # Quit if there's an error
 set -e
 
-version="2.78"
-minor=""
+#version="2.78"
+#minor=""
+# I can't get anything newer thatn 2.76b to work in vbox
+version="2.76"
+minor="b"
 project_dir=$(pwd)
 blender_dir="blender-$version$minor-OSX_10.6-x86_64"
-miniconda_bins="$project_dir/miniconda3/bin"
+miniconda_dir="$project_dir/miniconda3/"
 blender_dir_full="$project_dir/blender-$version$minor-OSX_10.6-x86_64"
 blender_zip="$blender_dir.zip"
 mirror1="http://ftp.halifax.rwth-aachen.de/blender/release/Blender$version/$blender_zip";
 mirror2="http://ftp.nluug.nl/pub/graphics/blender/release/Blender$version/$blender_zip";
 mirror3="http://download.blender.org/release/Blender$version/$blender_zip";
 mirror4="http://www.mcell.org/download/files/$blender_zip";
-mirrors=($mirror1 $mirror2 $mirror3 $mirror4);
+mirrors=($mirror1 $mirror2 $mirror3);
 #random=$(shuf -i 0-3 -n 1);
 
 # Grab Blender and extract it
 #selected_mirror=${mirrors[$random]}
-selected_mirror=${mirrors[3]}
+selected_mirror=${mirrors[1]}
 echo $selected_mirror
 wget $selected_mirror
-unzip $blender_zip -d $blender_dir
+unzip $blender_zip -d .
 rm -fr $blender_zip
 
 # get matplotlib recipe that doesn't use qt
 git clone https://github.com/jczech/matplotlib-feedstock
 
 # get miniconda, add custom matplotlib with custom recipe
-wget --no-check-certificate https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-bash Miniconda3-latest-MacOSX-x86_64.sh -b -p ./miniconda3
-cd $miniconda_bins
-PATH=$PATH:$miniconda_bins
+miniconda_script="Miniconda3-latest-MacOSX-x86_64.sh"
+wget --no-check-certificate https://repo.continuum.io/miniconda/$miniconda_script
+bash $miniconda_script -b -p ./miniconda3
+cd $miniconda_dir/bin
+PATH=$PATH:$miniconda_dir/bin
 ./conda install -y conda-build
 ./conda install -y nomkl
 ./conda build ../../matplotlib-feedstock/recipe --numpy 1.11
@@ -45,25 +48,26 @@ PATH=$PATH:$miniconda_bins
 ./conda clean -y --all
 
 # remove existing python, add our new custom version
-cd $blender_dir_full/$version
-rm -fr python
-mkdir -p python/bin
-cp ../../miniconda3/bin/python3.5m python/bin
-cp -fr ../../miniconda3/lib python
+cd $blender_dir_full/blender.app/Contents/Resources/$version/
+cp -fr $miniconda_dir/ python/
+#rm -fr python
+#mkdir -p python/bin
+#cp $miniconda_dir/bin/python3.5m python/bin
+#cp -fr $miniconda_dir/lib python
 
 # cleanup miniconda stuff
-rm -fr ../../miniconda3
-rm -fr ../../matplotlib-feedstock
-rm ../../Miniconda3-latest-Linux-x86_64.sh
+rm -fr $miniconda_dir
+rm -fr $project_dir/matplotlib-feedstock
+rm $project_dir/$miniconda_script
 
 # Set up GAMer
-cd $blender_dir_full/$version
-git clone https://github.com/mcellteam/gamer
+cd $blender_dir_full/blender.app/Contents/Resources/$version
+git clone https://github.com/jczech/gamer
 cd gamer
-sed -i 's/LDFLAGS :=.*/LDFLAGS = "-L\/usr\/local\/lib"/' makefile 
-sed -i 's/export PYTHON :=.*/export PYTHON = \/usr\/bin\/python3\.5/' makefile
-sed -i 's/INSTALL_DIR :=.*/INSTALL_DIR = ../' makefile 
-sed -i 's/3.4/3.5/' makefile 
+#sed -i 's/LDFLAGS :=.*/LDFLAGS LDFLAGS := -L\/usr\/local\/Cellar\/python3\/3\.5\.2_3\/Frameworks\/Python\.framework\/Versions\/3\.5\/lib/' makefile 
+#sed -i 's/export PYTHON :=.*/export PYTHON := \/usr\/local\/bin\/python3\.5/' makefile
+#sed -i 's/INSTALL_DIR :=.*/INSTALL_DIR := ../' makefile 
+#sed -i 's/3.4/3.5/' makefile 
 make
 make install
 cd ..
@@ -73,8 +77,8 @@ rm -fr gamer
 # Adding userpref.blend so that CB is enabled by default and sziptup.blend to
 # give user a better default layout.
 cd $project_dir
-cp -fr ../config $blender_dir/$version
-cd $blender_dir_full/$version/scripts/addons
+cp -fr $project_dir/../config $blender_dir/$version
+cd $blender_dir_full/blender.app/Contents/Resources/$version/scripts/addons
 git clone https://github.com/mcellteam/cellblender
 cd cellblender
 git checkout development
@@ -82,8 +86,8 @@ git submodule init
 git submodule update
 # These changes seem to be needed for the versions of python and gcc that come
 # with ubuntu.
-sed -i 's/python3\.4/python3/' io_mesh_mcell_mdl/makefile
-#sed -i 's/gcc \(-lGL -lglut -lGLU\) \(-o SimControl SimControl.o\)/gcc \2 \1/' makefile
+sed -i '' 's/python3\.4/python3/' io_mesh_mcell_mdl/makefile
+sed -i '' 's/gcc \(-lGL -lglut -lGLU\) \(-o SimControl SimControl.o\)/gcc \2 \1/' makefile
 make
 rm cellblender.zip
 rm cellblender
@@ -102,8 +106,8 @@ cd src
 cd ..
 mkdir build
 cd build
-#cmake ..
-../src/configure
+cmake ..
+#../src/configure
 make
 mv mcell ../..
 cd ../..
