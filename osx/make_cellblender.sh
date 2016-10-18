@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This was designed to be used with MacOS, but isn't currently functional.
+# This was designed to be used with MacOS but isn't currently functional.
 
 # Echo every command
 set -o verbose 
@@ -69,7 +69,7 @@ rm -fr gamer
 # Adding userpref.blend so that CB is enabled by default and sziptup.blend to
 # give user a better default layout.
 cd $project_dir
-cp -fr $project_dir/../config $blender_dir/$version
+cp -fr $project_dir/../config $blender_dir_full/blender.app/Contents/Resources/$version/config
 cd $blender_dir_full/blender.app/Contents/Resources/$version/scripts/addons
 git clone https://github.com/mcellteam/cellblender
 cd cellblender
@@ -79,10 +79,13 @@ git submodule update
 # These changes seem to be needed for the versions of python and gcc that come
 # with ubuntu.
 sed -i '' 's/python3\.4/python3/' io_mesh_mcell_mdl/makefile
-sed -i '' 's/gcc \(-lGL -lglut -lGLU\) \(-o SimControl SimControl.o\)/gcc \2 \1/' makefile
+#sed -i '' 's/gcc \(-lGL -lglut -lGLU\) \(-o SimControl SimControl.o\)/gcc \2 \1/' makefile
+#make
+#rm cellblender.zip
+#rm cellblender
+cd io_mesh_mcell_mdl
 make
-rm cellblender.zip
-rm cellblender
+cd ..
 rm .gitignore
 rm -fr .git
 
@@ -99,7 +102,6 @@ cd ..
 mkdir build
 cd build
 cmake ..
-#../src/configure
 make
 mv mcell ../..
 cd ../..
@@ -108,11 +110,11 @@ mkdir bin
 mv mcell bin
 
 # Build sbml2json for bng importer
-cd bng
-mkdir bin
-make
-make install
-make clean
+#cd bng
+#mkdir bin
+#make
+#make install
+#make clean
 
 cd $project_dir
 zip -r cellblender1.1_bundle_osx.zip $blender_dir
