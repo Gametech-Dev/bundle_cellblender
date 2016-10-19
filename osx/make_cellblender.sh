@@ -42,6 +42,7 @@ bash $miniconda_script -b -p ./miniconda3
 cd $miniconda_dir/bin
 PATH=$PATH:$miniconda_dir/bin
 ./conda install -y conda-build
+./conda install -y -c SBMLTeam python-libsbml
 ./conda install -y nomkl
 ./conda build ../../matplotlib-feedstock/recipe --numpy 1.11
 ./conda install --use-local -y matplotlib
