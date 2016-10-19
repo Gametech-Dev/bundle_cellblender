@@ -27,19 +27,26 @@ random=$(shuf -i 0-3 -n 1);
 #selected_mirror=${mirrors[$random]}
 selected_mirror=${mirrors[3]}
 echo $selected_mirror
-wget $selected_mirror
-bunzip2 $blender_bz2
+if [ ! -f $blender_tar ]
+then
+	wget $selected_mirror
+	bunzip2 $blender_bz2
+fi
 tar xf $blender_tar
-rm -fr $blender_tar
 
 # get matplotlib recipe that doesn't use qt
 git clone https://github.com/jczech/matplotlib-feedstock
 
 # get miniconda, add custom matplotlib with custom recipe
-wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+miniconda_file="Miniconda3-latest-Linux-x86_64.sh"
+if [ ! -f $miniconda_file ]
+then
+	wget https://repo.continuum.io/miniconda/$miniconda_file
+fi
 bash Miniconda3-latest-Linux-x86_64.sh -b -p ./miniconda3
 cd $miniconda_bins
 PATH=$PATH:$miniconda_bins
+./conda install -y -c SBMLTeam python-libsbml
 ./conda install -y conda-build
 ./conda install -y nomkl
 ./conda build ../../matplotlib-feedstock/recipe --numpy 1.11
