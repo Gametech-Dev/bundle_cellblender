@@ -9,7 +9,7 @@ $miniconda_dir = "$home\Miniconda3"
 $miniconda_scripts = "$miniconda_dir\Scripts"
 $mcell_version = "3.4"
 $blender_dir = "$project_dir\blender-$bl_version$bl_minor-windows64"
-$python_dir = "$blender_dir\python"
+$python_dir = "$blender_dir\$bl_version$bl_minor\python"
 $addon_dir = "$blender_dir\$bl_version\scripts\addons"
 $matplotlib_dir = "$project_dir\matplotlib-feedstock"
 
