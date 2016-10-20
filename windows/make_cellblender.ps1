@@ -3,12 +3,13 @@ $bl_version = "2.78"
 $bl_minor = ""
 $project_dir = "$home\bundle_cellblender\windows"
 #$blender_download_url = "http://ftp.halifax.rwth-aachen.de/blender/release/Blender$bl_version/blender-$bl_version$bl_minor-windows64.zip"
-$blender_download_url = "http://mcell.org/download/blender-$bl_version$bl_minor-windows64.zip"
+$blender_download_url = "http://mcell.org/download/files/blender-$bl_version$bl_minor-windows64.zip"
 $blender_zip = "$projectdir\blender.zip"
 $miniconda_dir = "$home\Miniconda3"
 $miniconda_scripts = "$miniconda_dir\Scripts"
 $mcell_version = "3.4"
 $blender_dir = "$project_dir\blender-$bl_version$bl_minor-windows64"
+$python_dir = "$blender_dir\python"
 $addon_dir = "$blender_dir\$bl_version\scripts\addons"
 $matplotlib_dir = "$project_dir\matplotlib-feedstock"
 
@@ -39,12 +40,12 @@ git submodule update
 $cellblender_dir = "$addon_dir\cellblender"
 
 # Build sbml2json for bng importer
-cd "$cellblender_dir\bng"
-& 'C:\Program Files\7-Zip\7z.exe' x pyinstaller2.zip
+#cd "$cellblender_dir\bng"
+#& 'C:\Program Files\7-Zip\7z.exe' x pyinstaller2.zip
 #C:\tools\python2\python.exe .\pyinstaller2\pyinstaller.py sbml2json.spec
-python2.7.exe .\pyinstaller2\pyinstaller.py sbml2json.spec
-mkdir bin
-cp dist\sbml2json bin\sbml2json.exe
+#python2.7.exe .\pyinstaller2\pyinstaller.py sbml2json.spec
+#mkdir bin
+#cp dist\sbml2json bin\sbml2json.exe
 
 cd $cellblender_dir
 
@@ -74,6 +75,7 @@ cd $project_dir
 git clone https://github.com/jczech/matplotlib-feedstock
 cd $miniconda_scripts
 .\conda.exe install -y conda-build
+.\conda.exe install -c SBMLTeam -y python-libsbml
 .\conda.exe install -y m2-patch
 .\conda.exe build ..\..\matplotlib-feedstock\recipe --numpy 1.11
 .\conda.exe install --use-local -y matplotlib
