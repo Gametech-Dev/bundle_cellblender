@@ -30,11 +30,15 @@ selected_mirror=${mirrors[1]}
 if [ ! -f $blender_zip ]
 then
 	wget $selected_mirror
-	unzip $blender_zip -d .
 fi
+unzip $blender_zip -d .
 
 # get matplotlib recipe that doesn't use qt
-git clone https://github.com/jczech/matplotlib-feedstock
+matplotlib_dir="matplotlib-feedstock"
+if [ ! -d $matplotlib_dir ]
+then
+	git clone https://github.com/jczech/$matplotlib_dir
+fi
 
 # get miniconda, add custom matplotlib with custom recipe
 miniconda_script="Miniconda3-latest-MacOSX-x86_64.sh"
@@ -49,7 +53,7 @@ PATH=$PATH:$miniconda_dir/bin
 ./conda install -y conda-build
 ./conda install -y -c SBMLTeam python-libsbml
 ./conda install -y nomkl
-./conda build ../../matplotlib-feedstock/recipe --numpy 1.11
+./conda build ../../$matplotlib_dir/recipe --numpy 1.11
 ./conda install --use-local -y matplotlib
 ./conda clean -y --all
 
@@ -59,7 +63,7 @@ cp -fr $miniconda_dir/ python/
 
 # cleanup miniconda stuff
 rm -fr $miniconda_dir
-rm -fr $project_dir/matplotlib-feedstock
+rm -fr $project_dir/$matplotlib_dir
 
 # Set up GAMer
 cd $blender_dir_full/blender.app/Contents/Resources/$version
