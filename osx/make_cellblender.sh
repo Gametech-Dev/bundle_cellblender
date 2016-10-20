@@ -27,17 +27,22 @@ mirrors=($mirror1 $mirror2 $mirror3);
 # Grab Blender and extract it
 #selected_mirror=${mirrors[$random]}
 selected_mirror=${mirrors[1]}
-echo $selected_mirror
-wget $selected_mirror
-unzip $blender_zip -d .
-rm -fr $blender_zip
+if [ ! -f $blender_zip ]
+then
+	wget $selected_mirror
+	unzip $blender_zip -d .
+fi
 
 # get matplotlib recipe that doesn't use qt
 git clone https://github.com/jczech/matplotlib-feedstock
 
 # get miniconda, add custom matplotlib with custom recipe
 miniconda_script="Miniconda3-latest-MacOSX-x86_64.sh"
-wget --no-check-certificate https://repo.continuum.io/miniconda/$miniconda_script
+if [ ! -f $miniconda_script ]
+then
+	wget --no-check-certificate https://repo.continuum.io/miniconda/$miniconda_script
+fi
+
 bash $miniconda_script -b -p ./miniconda3
 cd $miniconda_dir/bin
 PATH=$PATH:$miniconda_dir/bin
@@ -55,7 +60,6 @@ cp -fr $miniconda_dir/ python/
 # cleanup miniconda stuff
 rm -fr $miniconda_dir
 rm -fr $project_dir/matplotlib-feedstock
-rm $project_dir/$miniconda_script
 
 # Set up GAMer
 cd $blender_dir_full/blender.app/Contents/Resources/$version

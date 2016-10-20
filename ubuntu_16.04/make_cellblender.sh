@@ -26,7 +26,6 @@ random=$(shuf -i 0-3 -n 1);
 # Grab Blender and extract it
 #selected_mirror=${mirrors[$random]}
 selected_mirror=${mirrors[3]}
-echo $selected_mirror
 if [ ! -f $blender_tar ]
 then
 	wget $selected_mirror
@@ -38,12 +37,12 @@ tar xf $blender_tar
 git clone https://github.com/jczech/matplotlib-feedstock
 
 # get miniconda, add custom matplotlib with custom recipe
-miniconda_file="Miniconda3-latest-Linux-x86_64.sh"
-if [ ! -f $miniconda_file ]
+miniconda_script="Miniconda3-latest-Linux-x86_64.sh"
+if [ ! -f $miniconda_script ]
 then
-	wget https://repo.continuum.io/miniconda/$miniconda_file
+	wget https://repo.continuum.io/miniconda/$miniconda_script
 fi
-bash Miniconda3-latest-Linux-x86_64.sh -b -p ./miniconda3
+bash $miniconda_script -b -p ./miniconda3
 cd $miniconda_bins
 PATH=$PATH:$miniconda_bins
 ./conda install -y -c SBMLTeam python-libsbml
