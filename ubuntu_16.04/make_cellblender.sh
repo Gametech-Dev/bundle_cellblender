@@ -120,11 +120,11 @@ mkdir bin
 mv mcell bin
 
 # Build sbml2json for bng importer
-cd bng
-mkdir bin
-make
-make install
-make clean
+#cd bng
+#mkdir bin
+#make
+#make install
+#make clean
 
 cd $project_dir
 zip -r cellblender1.1_bundle_linux.zip $blender_dir
