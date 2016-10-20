@@ -66,12 +66,12 @@ rm ../../Miniconda3-latest-Linux-x86_64.sh
 
 # Set up GAMer
 cd $blender_dir_full/$version
-git clone https://github.com/mcellteam/gamer
+git clone https://github.com/jczech/gamer
 cd gamer
-sed -i 's/LDFLAGS :=.*/LDFLAGS = "-L\/usr\/local\/lib"/' makefile 
-sed -i 's/export PYTHON :=.*/export PYTHON = \/usr\/bin\/python3\.5/' makefile
-sed -i 's/INSTALL_DIR :=.*/INSTALL_DIR = ../' makefile 
-sed -i 's/3.4/3.5/' makefile 
+#sed -i 's/LDFLAGS :=.*/LDFLAGS = "-L\/usr\/local\/lib"/' makefile 
+#sed -i 's/export PYTHON :=.*/export PYTHON = \/usr\/bin\/python3\.5/' makefile
+#sed -i 's/INSTALL_DIR :=.*/INSTALL_DIR = ../' makefile 
+#sed -i 's/3.4/3.5/' makefile 
 make
 make install
 cd ..
