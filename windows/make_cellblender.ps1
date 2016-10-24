@@ -2,6 +2,7 @@
 $bl_version = "2.78"
 $bl_minor = ""
 $project_dir = "$home\bundle_cellblender\windows"
+$config_dir = "$home\bundle_cellblender\config"
 #$blender_download_url = "http://ftp.halifax.rwth-aachen.de/blender/release/Blender$bl_version/blender-$bl_version$bl_minor-windows64.zip"
 $blender_download_url = "http://mcell.org/download/files/blender-$bl_version$bl_minor-windows64.zip"
 $blender_zip = "$projectdir\blender.zip"
@@ -11,6 +12,7 @@ $mcell_version = "3.4"
 $blender_dir = "$project_dir\blender-$bl_version$bl_minor-windows64"
 $python_dir = "$blender_dir\$bl_version$bl_minor\python"
 $addon_dir = "$blender_dir\$bl_version\scripts\addons"
+$cellblender_dir = "$addon_dir\cellblender"
 $matplotlib_dir = "$project_dir\matplotlib-feedstock"
 
 cd $project_dir
@@ -37,7 +39,6 @@ cd cellblender
 git checkout development
 git submodule init
 git submodule update
-$cellblender_dir = "$addon_dir\cellblender"
 
 # Build sbml2json for bng importer
 #cd "$cellblender_dir\bng"
@@ -77,7 +78,7 @@ cd $miniconda_scripts
 .\conda.exe install -y conda-build
 .\conda.exe install -c SBMLTeam -y python-libsbml
 .\conda.exe install -y m2-patch
-.\conda.exe build ..\..\matplotlib-feedstock\recipe --numpy 1.11
+.\conda.exe build $matplotlib_dir\recipe --numpy 1.11
 .\conda.exe install --use-local -y matplotlib
 .\conda.exe build purge
 .\conda.exe clean -y --all
@@ -86,14 +87,18 @@ rm -Force -Recurse "$python_dir\lib"
 cp -Force -Recurse $miniconda_dir $python_dir
 mv $python_dir\Miniconda3 $python_dir\bin
 cp -Force -Recurse $miniconda_dir\Lib $python_dir
+cp -Force -Recurse $miniconda_dir\DLLs $python_dir
+
+cp -Force -Recurse $config_dir $blender_dir\$bl_version
 
 # Some cleanup
 rm -Force -Recurse "$cellblender_dir\mcell"
 rm -Force -Recurse "$project_dir\mcell-$mcell_version"
 rm -Force "$project_dir\v$mcell_version.zip"
-rm -Force "$project_dir\blender.zip"
+#rm -Force "$project_dir\blender.zip"
 rm -Force "$cellblender_dir\mcell.zip"
 rm -Force "$cellblender_dir\.gitignore"
+rm -Force "$cellblender_dir\.gitmodules"
 rm -Force -Recurse "$project_dir\test_suite"
 rm -Force -Recurse "$cellblender_dir\bng\dist"
 rm -Force -Recurse "$cellblender_dir\bng\build"
