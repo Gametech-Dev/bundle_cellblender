@@ -40,14 +40,6 @@ git checkout development
 git submodule init
 git submodule update
 
-# Build sbml2json for bng importer
-#cd "$cellblender_dir\bng"
-#& 'C:\Program Files\7-Zip\7z.exe' x pyinstaller2.zip
-#C:\tools\python2\python.exe .\pyinstaller2\pyinstaller.py sbml2json.spec
-#python2.7.exe .\pyinstaller2\pyinstaller.py sbml2json.spec
-#mkdir bin
-#cp dist\sbml2json bin\sbml2json.exe
-
 cd $cellblender_dir
 
 # Get and build MCell (for Windows this time... using MingW)
@@ -84,10 +76,16 @@ cd $miniconda_scripts
 .\conda.exe clean -y --all
 rm -Force -Recurse "$python_dir\bin"
 rm -Force -Recurse "$python_dir\lib"
-cp -Force -Recurse $miniconda_dir $python_dir
-mv $python_dir\Miniconda3 $python_dir\bin
+mkdir $python_dir\bin
+cp -Force -Recurse $miniconda_dir\*.exe $python_dir\bin
+cp -Force -Recurse $miniconda_dir\*.dll $python_dir\bin
 cp -Force -Recurse $miniconda_dir\Lib $python_dir
 cp -Force -Recurse $miniconda_dir\DLLs $python_dir
+cp -Force -Recurse $miniconda_dir\tcl\tcl8.6 $python_dir\Lib
+cp -Force -Recurse $miniconda_dir\tcl\tk8.6 $python_dir\Lib
+cd $python_dir
+Get-ChildItem -Filter '*.pyc' -Force -Recurse | Remove-Item -Force
+Get-ChildItem -Filter '__pycache__' -Force -Recurse | Remove-Item -Force
 
 cp -Force -Recurse $config_dir $blender_dir\$bl_version
 
@@ -97,6 +95,7 @@ rm -Force -Recurse "$project_dir\mcell-$mcell_version"
 rm -Force "$project_dir\v$mcell_version.zip"
 #rm -Force "$project_dir\blender.zip"
 rm -Force "$cellblender_dir\mcell.zip"
+rm -Force -Recurse "$cellblender_dir\.git"
 rm -Force "$cellblender_dir\.gitignore"
 rm -Force "$cellblender_dir\.gitmodules"
 rm -Force -Recurse "$project_dir\test_suite"
