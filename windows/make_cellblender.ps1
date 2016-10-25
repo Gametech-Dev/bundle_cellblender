@@ -2,14 +2,17 @@
 $bl_version = "2.78"
 $bl_minor = ""
 $project_dir = "$home\bundle_cellblender\windows"
+$config_dir = "$home\bundle_cellblender\config"
 #$blender_download_url = "http://ftp.halifax.rwth-aachen.de/blender/release/Blender$bl_version/blender-$bl_version$bl_minor-windows64.zip"
-$blender_download_url = "http://mcell.org/download/blender-$bl_version$bl_minor-windows64.zip"
+$blender_download_url = "http://mcell.org/download/files/blender-$bl_version$bl_minor-windows64.zip"
 $blender_zip = "$projectdir\blender.zip"
 $miniconda_dir = "$home\Miniconda3"
 $miniconda_scripts = "$miniconda_dir\Scripts"
 $mcell_version = "3.4"
 $blender_dir = "$project_dir\blender-$bl_version$bl_minor-windows64"
+$python_dir = "$blender_dir\$bl_version$bl_minor\python"
 $addon_dir = "$blender_dir\$bl_version\scripts\addons"
+$cellblender_dir = "$addon_dir\cellblender"
 $matplotlib_dir = "$project_dir\matplotlib-feedstock"
 
 cd $project_dir
@@ -36,15 +39,6 @@ cd cellblender
 git checkout development
 git submodule init
 git submodule update
-$cellblender_dir = "$addon_dir\cellblender"
-
-# Build sbml2json for bng importer
-cd "$cellblender_dir\bng"
-& 'C:\Program Files\7-Zip\7z.exe' x pyinstaller2.zip
-#C:\tools\python2\python.exe .\pyinstaller2\pyinstaller.py sbml2json.spec
-python2.7.exe .\pyinstaller2\pyinstaller.py sbml2json.spec
-mkdir bin
-cp dist\sbml2json bin\sbml2json.exe
 
 cd $cellblender_dir
 
@@ -74,24 +68,36 @@ cd $project_dir
 git clone https://github.com/jczech/matplotlib-feedstock
 cd $miniconda_scripts
 .\conda.exe install -y conda-build
+.\conda.exe install -c SBMLTeam -y python-libsbml
 .\conda.exe install -y m2-patch
-.\conda.exe build ..\..\matplotlib-feedstock\recipe --numpy 1.11
+.\conda.exe build $matplotlib_dir\recipe --numpy 1.11
 .\conda.exe install --use-local -y matplotlib
 .\conda.exe build purge
 .\conda.exe clean -y --all
 rm -Force -Recurse "$python_dir\bin"
 rm -Force -Recurse "$python_dir\lib"
-cp -Force -Recurse $miniconda_dir $python_dir
-mv $python_dir\Miniconda3 $python_dir\bin
+mkdir $python_dir\bin
+cp -Force -Recurse $miniconda_dir\*.exe $python_dir\bin
+cp -Force -Recurse $miniconda_dir\*.dll $python_dir\bin
 cp -Force -Recurse $miniconda_dir\Lib $python_dir
+cp -Force -Recurse $miniconda_dir\DLLs $python_dir
+cp -Force -Recurse $miniconda_dir\tcl\tcl8.6 $python_dir\Lib
+cp -Force -Recurse $miniconda_dir\tcl\tk8.6 $python_dir\Lib
+cd $python_dir
+Get-ChildItem -Filter '*.pyc' -Force -Recurse | Remove-Item -Force
+Get-ChildItem -Filter '__pycache__' -Force -Recurse | Remove-Item -Force
+
+cp -Force -Recurse $config_dir $blender_dir\$bl_version
 
 # Some cleanup
 rm -Force -Recurse "$cellblender_dir\mcell"
 rm -Force -Recurse "$project_dir\mcell-$mcell_version"
 rm -Force "$project_dir\v$mcell_version.zip"
-rm -Force "$project_dir\blender.zip"
+#rm -Force "$project_dir\blender.zip"
 rm -Force "$cellblender_dir\mcell.zip"
+rm -Force -Recurse "$cellblender_dir\.git"
 rm -Force "$cellblender_dir\.gitignore"
+rm -Force "$cellblender_dir\.gitmodules"
 rm -Force -Recurse "$project_dir\test_suite"
 rm -Force -Recurse "$cellblender_dir\bng\dist"
 rm -Force -Recurse "$cellblender_dir\bng\build"
