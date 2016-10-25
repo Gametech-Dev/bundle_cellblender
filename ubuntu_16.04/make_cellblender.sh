@@ -23,6 +23,8 @@ mirror4="http://www.mcell.org/download/files/$blender_bz2";
 mirrors=($mirror1 $mirror2 $mirror3 $mirror4);
 random=$(shuf -i 0-3 -n 1);
 
+rm -fr $blender_dir_full
+
 # Grab Blender and extract it
 #selected_mirror=${mirrors[$random]}
 selected_mirror=${mirrors[3]}
@@ -34,7 +36,12 @@ fi
 tar xf $blender_tar
 
 # get matplotlib recipe that doesn't use qt
-git clone https://github.com/jczech/matplotlib-feedstock
+if [ ! -d ./matplotlib-feedstock ]
+then
+	git clone https://github.com/jczech/matplotlib-feedstock
+	# not sure why the latest commit isn't working
+	git checkout 1e58ca8
+fi
 
 # get miniconda, add custom matplotlib with custom recipe
 miniconda_script="Miniconda3-latest-Linux-x86_64.sh"
@@ -42,13 +49,17 @@ if [ ! -f $miniconda_script ]
 then
 	wget https://repo.continuum.io/miniconda/$miniconda_script
 fi
-bash $miniconda_script -b -p ./miniconda3
+
+if [ ! -d ./miniconda3 ]
+then
+	bash $miniconda_script -b -p ./miniconda3
+fi
 cd $miniconda_bins
 PATH=$PATH:$miniconda_bins
-./conda install -y -c SBMLTeam python-libsbml
 ./conda install -y conda-build
+./conda install -y -c SBMLTeam python-libsbml
 ./conda install -y nomkl
-./conda build ../../matplotlib-feedstock/recipe --numpy 1.11
+./conda build $project_dir/matplotlib-feedstock/recipe --numpy 1.11
 ./conda install --use-local -y matplotlib
 ./conda clean -y --all
 
@@ -58,20 +69,18 @@ rm -fr python
 mkdir -p python/bin
 cp ../../miniconda3/bin/python3.5m python/bin
 cp -fr ../../miniconda3/lib python
+find . -type f -name "*.pyc" -delete
+find . -type d -name "__pycache__" -delete
 
 # cleanup miniconda stuff
-rm -fr ../../miniconda3
-rm -fr ../../matplotlib-feedstock
-rm ../../Miniconda3-latest-Linux-x86_64.sh
+#rm -fr ../../miniconda3
+#rm -fr ../../matplotlib-feedstock
+#rm ../../Miniconda3-latest-Linux-x86_64.sh
 
 # Set up GAMer
 cd $blender_dir_full/$version
 git clone https://github.com/jczech/gamer
 cd gamer
-#sed -i 's/LDFLAGS :=.*/LDFLAGS = "-L\/usr\/local\/lib"/' makefile 
-#sed -i 's/export PYTHON :=.*/export PYTHON = \/usr\/bin\/python3\.5/' makefile
-#sed -i 's/INSTALL_DIR :=.*/INSTALL_DIR = ../' makefile 
-#sed -i 's/3.4/3.5/' makefile 
 make
 make install
 cd ..
@@ -105,26 +114,17 @@ mcell_zip_name="v3.4.zip"
 wget https://github.com/mcellteam/mcell/archive/$mcell_zip_name
 unzip $mcell_zip_name
 cd $mcell_dir_name
-cd src
-./bootstrap
-cd ..
+export CC=/usr/bin/clang
+sed -i 's:-O2:-O3:g' CMakeLists.txt
 mkdir build
 cd build
-#cmake ..
-../src/configure
+cmake ..
 make
 mv mcell ../..
 cd ../..
 rm -fr $mcell_dir_name $mcell_zip_name
 mkdir bin
 mv mcell bin
-
-# Build sbml2json for bng importer
-#cd bng
-#mkdir bin
-#make
-#make install
-#make clean
 
 cd $project_dir
 zip -r cellblender1.1_bundle_linux.zip $blender_dir
