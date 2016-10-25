@@ -31,6 +31,8 @@ if [ ! -f $blender_zip ]
 then
 	wget $selected_mirror
 fi
+rm -fr $project_dir/__MACOSX
+rm -fr $blender_dir_full
 unzip $blender_zip -d .
 
 # get matplotlib recipe that doesn't use qt
@@ -47,23 +49,32 @@ then
 	wget --no-check-certificate https://repo.continuum.io/miniconda/$miniconda_script
 fi
 
-bash $miniconda_script -b -p ./miniconda3
+
+if [ ! -d $miniconda_dir ]
+then
+	bash $miniconda_script -b -p ./miniconda3
+fi
+
 cd $miniconda_dir/bin
 PATH=$PATH:$miniconda_dir/bin
+#./conda install -y python=3.4
 ./conda install -y conda-build
 ./conda install -y -c SBMLTeam python-libsbml
+#./pip install python-libsbml
 ./conda install -y nomkl
 ./conda build ../../$matplotlib_dir/recipe --numpy 1.11
 ./conda install --use-local -y matplotlib
 ./conda clean -y --all
+cd ..
+find . \( -name \*.pyc -o -name \*.pyo -o -name __pycache__ \) -prune -exec rm -rf {} +
 
 # remove existing python, add our new custom version
 cd $blender_dir_full/blender.app/Contents/Resources/$version/
 cp -fr $miniconda_dir/ python/
 
 # cleanup miniconda stuff
-rm -fr $miniconda_dir
-rm -fr $project_dir/$matplotlib_dir
+#rm -fr $miniconda_dir
+#rm -fr $project_dir/$matplotlib_dir
 
 # Set up GAMer
 cd $blender_dir_full/blender.app/Contents/Resources/$version
