@@ -40,7 +40,9 @@ if [ ! -d ./matplotlib-feedstock ]
 then
 	git clone https://github.com/jczech/matplotlib-feedstock
 	# not sure why the latest commit isn't working
+	cd matplotlib-feedstock
 	git checkout 1e58ca8
+	cd ..
 fi
 
 # get miniconda, add custom matplotlib with custom recipe

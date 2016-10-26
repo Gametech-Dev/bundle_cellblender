@@ -12,6 +12,7 @@ version="2.78"
 minor=""
 project_dir=$(pwd)
 blender_dir="blender-$version$minor-linux-glibc211-x86_64"
+miniconda_bins="$project_dir/miniconda3/bin"
 blender_dir_full="$project_dir/blender-$version$minor-linux-glibc211-x86_64"
 blender_tar="$blender_dir.tar"
 blender_bz2="$blender_tar.bz2"
@@ -25,23 +26,60 @@ random=$(shuf -i 0-3 -n 1);
 # Grab Blender and extract it
 #selected_mirror=${mirrors[$random]}
 selected_mirror=${mirrors[3]}
-echo $selected_mirror
-wget $selected_mirror
-bunzip2 $blender_bz2
+if [ ! -f $blender_tar ]
+then
+	wget $selected_mirror
+	bunzip2 $blender_bz2
+fi
 tar xf $blender_tar
-rm -fr $blender_tar
 
-# Set up GAMer
+# get matplotlib recipe that doesn't use qt
+if [ ! -d ./matplotlib-feedstock ]
+then
+	git clone https://github.com/jczech/matplotlib-feedstock
+	# not sure why the latest commit isn't working
+	cd matplotlib-feedstock
+	git checkout 1e58ca8
+	cd ..
+fi
+
+# get miniconda, add custom matplotlib with custom recipe
+miniconda_script="Miniconda3-latest-Linux-x86_64.sh"
+if [ ! -f $miniconda_script ]
+then
+	wget https://repo.continuum.io/miniconda/$miniconda_script
+fi
+
+if [ ! -d ./miniconda3 ]
+then
+	bash $miniconda_script -b -p ./miniconda3
+fi
+cd $miniconda_bins
+PATH=$PATH:$miniconda_bins
+./conda install -y conda-build
+./conda install -y -c SBMLTeam python-libsbml
+./conda install -y nomkl
+./conda build $project_dir/matplotlib-feedstock/recipe --numpy 1.11
+./conda install --use-local -y matplotlib
+./conda clean -y --all
+
+# remove existing python, add our new custom version
 cd $blender_dir_full/$version
-git clone https://github.com/mcellteam/gamer
-cd gamer
-sed -i 's/LDFLAGS :=.*/LDFLAGS = ""/' makefile 
-sed -i 's/export PYTHON :=.*/export PYTHON = \/usr\/bin\/python3\.4/' makefile
-sed -i 's/INSTALL_DIR :=.*/INSTALL_DIR = ../' makefile 
-make
-make install
-cd ..
-rm -fr gamer
+rm -fr python
+mkdir -p python/bin
+cp ../../miniconda3/bin/python3.5m python/bin
+cp -fr ../../miniconda3/lib python
+find . -type f -name "*.pyc" -delete
+find . -type d -name "__pycache__" -delete
+
+# Set up GAMer. XXX: This is not working right now. :(
+#cd $blender_dir_full/$version
+#git clone https://github.com/jczech/gamer
+#cd gamer
+#make
+#make install
+#cd ..
+#rm -fr gamer
 
 # Set up CellBlender
 # Adding userpref.blend so that CB is enabled by default and startup.blend to
@@ -64,13 +102,17 @@ rm cellblender
 rm .gitignore
 rm -fr .git
 
-mcell_dir_name="mcell-master"
-mcell_zip_name="master.zip"
+#mcell_dir_name="mcell-master"
+#mcell_zip_name="master.zip"
+mcell_dir_name="mcell-3.4"
+mcell_zip_name="v3.4.zip"
+
 # Get and build MCell
-#wget https://github.com/mcellteam/mcell/archive/v3.3.zip
 wget https://github.com/mcellteam/mcell/archive/$mcell_zip_name
 unzip $mcell_zip_name
 cd $mcell_dir_name
+export CC=/usr/bin/clang
+sed -i 's:-O2:-O3:g' CMakeLists.txt
 mkdir build
 cd build
 cmake ..
@@ -80,13 +122,6 @@ cd ../..
 rm -fr $mcell_dir_name $mcell_zip_name
 mkdir bin
 mv mcell bin
-
-# Build sbml2json for bng importer
-cd bng
-mkdir bin
-make
-make install
-make clean
 
 cd $project_dir
 zip -r cellblender1.1_bundle_linux.zip $blender_dir
