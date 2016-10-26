@@ -73,13 +73,14 @@ find . -type f -name "*.pyc" -delete
 find . -type d -name "__pycache__" -delete
 
 # Set up GAMer. XXX: This is not working right now. :(
-#cd $blender_dir_full/$version
-#git clone https://github.com/jczech/gamer
-#cd gamer
-#make
-#make install
-#cd ..
-#rm -fr gamer
+cd $blender_dir_full/$version
+git clone https://github.com/jczech/gamer
+cd gamer
+sed -i 's:3.5:3.4:g' makefile
+make
+make install
+cd ..
+rm -fr gamer
 
 # Set up CellBlender
 # Adding userpref.blend so that CB is enabled by default and startup.blend to
