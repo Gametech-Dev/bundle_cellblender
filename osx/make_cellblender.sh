@@ -1,17 +1,18 @@
 #!/bin/bash
 
-# This was designed to be used with MacOS but isn't currently functional.
+# Note: this is mostly functional, although the GAMer build is currently
+# failing.
 
 # Echo every command
 set -o verbose 
 # Quit if there's an error
 set -e
 
-#version="2.78"
-#minor=""
+version="2.78"
+minor=""
 # I can't get anything newer thatn 2.76b to work in vbox
-version="2.76"
-minor="b"
+#version="2.76"
+#minor="b"
 project_dir=$(pwd)
 blender_dir="blender-$version$minor-OSX_10.6-x86_64"
 miniconda_dir="$project_dir/miniconda3/"
@@ -33,7 +34,8 @@ then
 fi
 rm -fr $project_dir/__MACOSX
 rm -fr $blender_dir_full
-unzip $blender_zip -d .
+unzip $blender_zip -d $blender_dir_full
+#unzip $blender_zip -d .
 
 # get matplotlib recipe that doesn't use qt
 matplotlib_dir="matplotlib-feedstock"
@@ -48,7 +50,6 @@ if [ ! -f $miniconda_script ]
 then
 	wget --no-check-certificate https://repo.continuum.io/miniconda/$miniconda_script
 fi
-
 
 if [ ! -d $miniconda_dir ]
 then
@@ -66,6 +67,7 @@ PATH=$PATH:$miniconda_dir/bin
 ./conda install --use-local -y matplotlib
 ./conda clean -y --all
 cd ..
+# Remove pyc file and __pycache__ directories to keep build size down
 find . \( -name \*.pyc -o -name \*.pyo -o -name __pycache__ \) -prune -exec rm -rf {} +
 
 # remove existing python, add our new custom version
@@ -86,7 +88,7 @@ cd ..
 rm -fr gamer
 
 # Set up CellBlender
-# Adding userpref.blend so that CB is enabled by default and sziptup.blend to
+# Adding userpref.blend so that CB is enabled by default and startup.blend to
 # give user a better default layout.
 cd $project_dir
 cp -fr $project_dir/../config $blender_dir_full/blender.app/Contents/Resources/$version/config
@@ -96,8 +98,6 @@ cd cellblender
 git checkout development
 git submodule init
 git submodule update
-# These changes seem to be needed for the versions of python and gcc that come
-# with ubuntu.
 sed -i '' 's/python3\.4/python3/' io_mesh_mcell_mdl/makefile
 #sed -i '' 's/gcc \(-lGL -lglut -lGLU\) \(-o SimControl SimControl.o\)/gcc \2 \1/' makefile
 #make
@@ -125,13 +125,6 @@ cd ../..
 rm -fr $mcell_dir_name $mcell_zip_name
 mkdir bin
 mv mcell bin
-
-# Build sbml2json for bng importer
-#cd bng
-#mkdir bin
-#make
-#make install
-#make clean
 
 cd $project_dir
 zip -r cellblender1.1_bundle_osx.zip $blender_dir
