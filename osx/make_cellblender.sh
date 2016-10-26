@@ -15,7 +15,7 @@ minor=""
 #minor="b"
 project_dir=$(pwd)
 blender_dir="blender-$version$minor-OSX_10.6-x86_64"
-miniconda_dir="$project_dir/miniconda3/"
+miniconda_dir="$project_dir/miniconda3"
 blender_dir_full="$project_dir/blender-$version$minor-OSX_10.6-x86_64"
 blender_zip="$blender_dir.zip"
 mirror1="http://ftp.halifax.rwth-aachen.de/blender/release/Blender$version/$blender_zip";
@@ -38,11 +38,16 @@ unzip $blender_zip -d $blender_dir_full
 #unzip $blender_zip -d .
 
 # get matplotlib recipe that doesn't use qt
-matplotlib_dir="matplotlib-feedstock"
+matplotlib_dir="$project_dir/matplotlib-feedstock"
 if [ ! -d $matplotlib_dir ]
 then
-	git clone https://github.com/jczech/$matplotlib_dir
+	git clone https://github.com/jczech/matplotlib-feedstock
 fi
+cd $matplotlib_dir
+git fetch origin
+git reset --hard origin/master
+sed -i '' '14,16d' recipe/meta.yaml
+cd ..
 
 # get miniconda, add custom matplotlib with custom recipe
 miniconda_script="Miniconda3-latest-MacOSX-x86_64.sh"
@@ -51,7 +56,7 @@ then
 	wget --no-check-certificate https://repo.continuum.io/miniconda/$miniconda_script
 fi
 
-if [ ! -d $miniconda_dir ]
+if [ ! -d ./miniconda3 ]
 then
 	bash $miniconda_script -b -p ./miniconda3
 fi
@@ -63,7 +68,7 @@ PATH=$PATH:$miniconda_dir/bin
 ./conda install -y -c SBMLTeam python-libsbml
 #./pip install python-libsbml
 ./conda install -y nomkl
-./conda build ../../$matplotlib_dir/recipe --numpy 1.11
+./conda build $matplotlib_dir/recipe --numpy 1.11
 ./conda install --use-local -y matplotlib
 ./conda clean -y --all
 cd ..
