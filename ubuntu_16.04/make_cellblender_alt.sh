@@ -28,8 +28,8 @@ git submodule update --init --recursive
 git submodule foreach git checkout master
 git submodule foreach git pull --rebase origin master
 
-#cd $project_dir/blender-git
-#Y | ./blender/build_files/build_environment/install_deps.sh
+cd $project_dir/blender-git
+./blender/build_files/build_environment/install_deps.sh
 
 cd $project_dir/blender-git/blender
 sed -i '/tkinter/d' ./source/creator/CMakeLists.txt
@@ -44,6 +44,7 @@ cp $project_dir/get-pip.py .
 #sudo apt-get install zlib1g zlib1g-dev
 #sudo apt-get install bzip2 libbz2-dev
 
+cd $project_dir/blender-git/build_linux/bin/2.78/python/local/bin
 ./pip install python-libsbml
 ./pip install matplotlib
 
