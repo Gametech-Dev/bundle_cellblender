@@ -50,7 +50,10 @@ cd $project_dir/blender-git/build_linux/bin/2.78/python/local/bin
 
 # Set up GAMer
 cd $blender_dir_full/$version
-git clone https://github.com/jczech/gamer
+if [ ! -d gamer ]
+then
+  git clone https://github.com/jczech/gamer
+fi
 cd gamer
 make
 make install
@@ -82,14 +85,15 @@ rm cellblender
 rm .gitignore
 rm -fr .git
 
-mcell_dir_name="mcell-3.4"
-#mcell_zip_name="master.zip"
-mcell_zip_name="v3.4.zip"
+mcell_dir_name="mcell-master"
+mcell_zip_name="master.zip"
+#mcell_dir_name="mcell-3.4"
+#mcell_zip_name="v3.4.zip"
 # Get and build MCell
 wget https://github.com/mcellteam/mcell/archive/$mcell_zip_name
 unzip $mcell_zip_name
 cd $mcell_dir_name
-export CC=/usr/bin/clang
+export CC=/usr/bin/clang3.4
 sed -i 's:-O2:-O3:g' CMakeLists.txt
 mkdir build
 cd build

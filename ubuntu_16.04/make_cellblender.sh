@@ -9,11 +9,12 @@ set -o verbose
 set -e
 
 version="2.78"
-minor=""
+minor="c"
+glibc="219"
 project_dir=$(pwd)
-blender_dir="blender-$version$minor-linux-glibc211-x86_64"
+blender_dir="blender-$version$minor-linux-glibc$glibc-x86_64"
 miniconda_bins="$project_dir/miniconda3/bin"
-blender_dir_full="$project_dir/blender-$version$minor-linux-glibc211-x86_64"
+blender_dir_full="$project_dir/blender-$version$minor-linux-glibc$glibc-x86_64"
 blender_tar="$blender_dir.tar"
 blender_bz2="$blender_tar.bz2"
 mirror1="http://ftp.halifax.rwth-aachen.de/blender/release/Blender$version/$blender_bz2";
@@ -26,8 +27,8 @@ random=$(shuf -i 0-3 -n 1);
 rm -fr $blender_dir_full
 
 # Grab Blender and extract it
-#selected_mirror=${mirrors[$random]}
-selected_mirror=${mirrors[3]}
+selected_mirror=${mirrors[$random]}
+#selected_mirror=${mirrors[3]}
 if [ ! -f $blender_tar ]
 then
 	wget $selected_mirror
@@ -35,15 +36,15 @@ then
 fi
 tar xf $blender_tar
 
-# get matplotlib recipe that doesn't use qt
-if [ ! -d ./matplotlib-feedstock ]
-then
-	git clone https://github.com/jczech/matplotlib-feedstock
-	# not sure why the latest commit isn't working
-	cd matplotlib-feedstock
-	git checkout 1e58ca8
-	cd ..
-fi
+## get matplotlib recipe that doesn't use qt
+#if [ ! -d ./matplotlib-feedstock ]
+#then
+#  git clone https://github.com/jczech/matplotlib-feedstock
+#  # not sure why the latest commit isn't working
+#  cd matplotlib-feedstock
+#  git checkout 1e58ca8
+#  cd ..
+#fi
 
 # get miniconda, add custom matplotlib with custom recipe
 miniconda_script="Miniconda3-latest-Linux-x86_64.sh"
@@ -58,19 +59,25 @@ then
 fi
 cd $miniconda_bins
 PATH=$PATH:$miniconda_bins
-./conda install -y conda-build
+#./conda install -y conda-build
+if [ ! -d ../envs/cb ]
+then
+  ./conda create -n cb python=3.5.2 numpy scipy matplotlib
+fi
+source ./activate cb
 ./conda install -y -c SBMLTeam python-libsbml
-./conda install -y nomkl
-./conda build $project_dir/matplotlib-feedstock/recipe --numpy 1.11
-./conda install --use-local -y matplotlib
+#./conda install -y nomkl
+#./conda install -y matplotlib
+#./conda build $project_dir/matplotlib-feedstock/recipe --numpy 1.11
+#./conda install --use-local -y matplotlib
 ./conda clean -y --all
 
 # remove existing python, add our new custom version
 cd $blender_dir_full/$version
 rm -fr python
 mkdir -p python/bin
-cp ../../miniconda3/bin/python3.5m python/bin
-cp -fr ../../miniconda3/lib python
+cp ../../miniconda3/envs/cb/bin/python3.5m python/bin
+cp -fr ../../miniconda3/envs/cb/lib python
 find . -type f -name "*.pyc" -delete
 find . -type d -name "__pycache__" -delete
 
@@ -116,7 +123,7 @@ mcell_zip_name="v3.4.zip"
 wget https://github.com/mcellteam/mcell/archive/$mcell_zip_name
 unzip $mcell_zip_name
 cd $mcell_dir_name
-export CC=/usr/bin/clang
+#export CC=/usr/bin/clang
 sed -i 's:-O2:-O3:g' CMakeLists.txt
 mkdir build
 cd build
@@ -129,4 +136,4 @@ mkdir bin
 mv mcell bin
 
 cd $project_dir
-zip -r cellblender1.1_bundle_linux.zip $blender_dir
+zip -r cellblender1.2_bundle_linux.zip $blender_dir
