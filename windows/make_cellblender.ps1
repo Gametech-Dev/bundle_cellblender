@@ -23,7 +23,7 @@ cd $project_dir
 & "$home\.babun\cygwin\bin\bash.exe" -login $project_dir\make_mcell.sh
 
 # Get Blender
-#Invoke-WebRequest $blender_download_url -OutFile $blender_zip
+Invoke-WebRequest $blender_download_url -OutFile $blender_zip
 & 'C:\Program Files\7-Zip\7z.exe' x $blender_zip -o"$project_dir"
 
 cd $addon_dir
@@ -61,12 +61,8 @@ rm $mcell_zip
 
 # Replace Blender's Python with Anaconda version
 # Assume Miniconda was already installed, because chocolatey version isn't working for me
-#cd $anaconda_scripts
-#.\conda create --name cb python=3.5.2 matplotlib numpy scipy
-# annoying. "conda activate" doesn't work in powershell. should be fixed in like 2037, i'm sure.
-#.\activate cb
-#.\conda install -c SBMLTeam -y python-libsbml
-#.\conda clean -y --all
+cd $anaconda_scripts
+.\conda create --name cb python=3.5.2 matplotlib numpy scipy
 cd $project_dir
 & .\make_conda_env.bat
 rm -Force -Recurse "$python_dir\bin"
