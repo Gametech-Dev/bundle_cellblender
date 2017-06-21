@@ -1,18 +1,18 @@
 ﻿# Change the project dir as needed
 $bl_version = "2.78"
-$bl_minor = ""
+$bl_minor = "c"
 #$project_dir = "$home\bundle_cellblender\windows"
 #$config_dir = "$home\bundle_cellblender\config"
 $project_dir = "$home\Documents\GitHub\bundle_cellblender\windows"
 $config_dir = "$home\Documents\GitHub\bundle_cellblender\config"
-#$blender_download_url = "http://ftp.halifax.rwth-aachen.de/blender/release/Blender$bl_version/blender-$bl_version$bl_minor-windows64.zip"
-$blender_download_url = "http://mcell.org/download/files/blender-$bl_version$bl_minor-windows64.zip"
-$blender_zip = "$projectdir\blender.zip"
+$blender_download_url = "http://ftp.halifax.rwth-aachen.de/blender/release/Blender$bl_version/blender-$bl_version$bl_minor-windows64.zip"
+#$blender_download_url = "http://mcell.org/download/files/blender-$bl_version$bl_minor-windows64.zip"
+$blender_zip = "$project_dir\blender.zip"
 $anaconda_dir = "$home\Anaconda3\envs\cb"
 $anaconda_scripts = "$anaconda_dir\Scripts"
 $mcell_version = "3.4"
 $blender_dir = "$project_dir\blender-$bl_version$bl_minor-windows64"
-$python_dir = "$blender_dir\$bl_version$bl_minor\python"
+$python_dir = "$blender_dir\$bl_version\python"
 $addon_dir = "$blender_dir\$bl_version\scripts\addons"
 $cellblender_dir = "$addon_dir\cellblender"
 
@@ -23,7 +23,7 @@ cd $project_dir
 & "$home\.babun\cygwin\bin\bash.exe" -login $project_dir\make_mcell.sh
 
 # Get Blender
-Invoke-WebRequest $blender_download_url -OutFile $blender_zip
+#Invoke-WebRequest $blender_download_url -OutFile $blender_zip
 & 'C:\Program Files\7-Zip\7z.exe' x $blender_zip -o"$project_dir"
 
 cd $addon_dir
@@ -59,11 +59,16 @@ rm -Recurse -Force $mcell_build_dir
 rm $mcell_zip
 
 
-# Replace Blender's Python with Miniconda version and custom matplotlib (w/o Qt)
+# Replace Blender's Python with Anaconda version
 # Assume Miniconda was already installed, because chocolatey version isn't working for me
+#cd $anaconda_scripts
+#.\conda create --name cb python=3.5.2 matplotlib numpy scipy
+# annoying. "conda activate" doesn't work in powershell. should be fixed in like 2037, i'm sure.
+#.\activate cb
+#.\conda install -c SBMLTeam -y python-libsbml
+#.\conda clean -y --all
 cd $project_dir
-& "$anaconda_scripts\conda.bat" install -c SBMLTeam -y python-libsbml
-& "$anaconda_scripts\conda.bat" clean -y --all
+& .\make_conda_env.bat
 rm -Force -Recurse "$python_dir\bin"
 rm -Force -Recurse "$python_dir\lib"
 mkdir $python_dir\bin
@@ -72,7 +77,6 @@ cp -Force -Recurse $anaconda_dir\*.dll $python_dir\bin
 cp -Force -Recurse $anaconda_dir\qt.conf $python_dir\bin
 cp -Force -Recurse $anaconda_dir\Lib $python_dir
 cp -Force -Recurse $anaconda_dir\DLLs $python_dir
-#cp -Force -Recurse $anaconda_dir\include $python_dir
 cp -Force -Recurse $anaconda_dir\Library $python_dir
 cp -Force -Recurse $anaconda_dir\tcl\tcl8.6 $python_dir\Lib
 cp -Force -Recurse $anaconda_dir\tcl\tk8.6 $python_dir\Lib
