@@ -1,5 +1,9 @@
 ubuntu_1*/cellblender*bundle_linux.zip
 ubuntu_1*/blender-2.*-x86_64
+ubuntu_1*/blender-2.*-x86_64.tar
+ubuntu_1*/miniconda3
+ubuntu_1*/Miniconda3-latest-Linux-x86_64.sh
 windows/blender-2*-windows64
 windows/cellblender*_bundle_windows.zip
 blender-git
+*.swp
