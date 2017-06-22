@@ -36,17 +36,7 @@ then
 fi
 tar xf $blender_tar
 
-## get matplotlib recipe that doesn't use qt
-#if [ ! -d ./matplotlib-feedstock ]
-#then
-#  git clone https://github.com/jczech/matplotlib-feedstock
-#  # not sure why the latest commit isn't working
-#  cd matplotlib-feedstock
-#  git checkout 1e58ca8
-#  cd ..
-#fi
-
-# get miniconda, add custom matplotlib with custom recipe
+# get miniconda
 miniconda_script="Miniconda3-latest-Linux-x86_64.sh"
 if [ ! -f $miniconda_script ]
 then
@@ -59,17 +49,12 @@ then
 fi
 cd $miniconda_bins
 PATH=$PATH:$miniconda_bins
-#./conda install -y conda-build
 if [ ! -d ../envs/cb ]
 then
   ./conda create -n cb python=3.5.2 numpy scipy matplotlib
 fi
 source ./activate cb
 ./conda install -y -c SBMLTeam python-libsbml
-#./conda install -y nomkl
-#./conda install -y matplotlib
-#./conda build $project_dir/matplotlib-feedstock/recipe --numpy 1.11
-#./conda install --use-local -y matplotlib
 ./conda clean -y --all
 
 # remove existing python, add our new custom version
@@ -83,7 +68,6 @@ find . -type d -name "__pycache__" -delete
 
 # cleanup miniconda stuff
 #rm -fr ../../miniconda3
-#rm -fr ../../matplotlib-feedstock
 #rm ../../Miniconda3-latest-Linux-x86_64.sh
 
 # Set up GAMer
@@ -116,14 +100,15 @@ rm cellblender
 rm .gitignore
 rm -fr .git
 
-mcell_dir_name="mcell-3.4"
-#mcell_zip_name="master.zip"
-mcell_zip_name="v3.4.zip"
+mcell_dir_name="mcell-master"
+mcell_zip_name="master.zip"
+#mcell_dir_name="mcell-3.4"
+#mcell_zip_name="v3.4.zip"
 # Get and build MCell
 wget https://github.com/mcellteam/mcell/archive/$mcell_zip_name
 unzip $mcell_zip_name
 cd $mcell_dir_name
-#export CC=/usr/bin/clang
+export CC=/usr/bin/clang
 sed -i 's:-O2:-O3:g' CMakeLists.txt
 mkdir build
 cd build
