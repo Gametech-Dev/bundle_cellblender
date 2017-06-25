@@ -10,7 +10,7 @@ $blender_download_url = "http://ftp.halifax.rwth-aachen.de/blender/release/Blend
 $blender_zip = "$project_dir\blender.zip"
 $anaconda_dir = "$home\Anaconda3\envs\cb"
 $anaconda_scripts = "$anaconda_dir\Scripts"
-$mcell_version = "3.4"
+$mcell_version = "master"
 $blender_dir = "$project_dir\blender-$bl_version$bl_minor-windows64"
 $python_dir = "$blender_dir\$bl_version\python"
 $addon_dir = "$blender_dir\$bl_version\scripts\addons"
@@ -23,7 +23,14 @@ cd $project_dir
 & "$home\.babun\cygwin\bin\bash.exe" -login $project_dir\make_mcell.sh
 
 # Get Blender
-Invoke-WebRequest $blender_download_url -OutFile $blender_zip
+$strFileName="c:\filename.txt"
+If (Test-Path $blender_zip){
+  # blender zip exists, do nothing
+}Else{
+  # blender zip does not exist, grab it
+  Invoke-WebRequest $blender_download_url -OutFile $blender_zip
+}
+#Extract Blender
 & 'C:\Program Files\7-Zip\7z.exe' x $blender_zip -o"$project_dir"
 
 cd $addon_dir
@@ -38,7 +45,8 @@ git checkout development
 cd $cellblender_dir
 
 # Get and build MCell (for Windows this time... using MingW)
-$mcell_download_url = "https://github.com/mcellteam/mcell/archive/v$mcell_version.zip"
+#$mcell_download_url = "https://github.com/mcellteam/mcell/archive/v$mcell_version.zip"
+$mcell_download_url = "https://github.com/mcellteam/mcell/archive/master.zip"
 $mcell_zip = "$cellblender_dir\mcell.zip"
 Invoke-WebRequest $mcell_download_url -OutFile $mcell_zip
 & 'C:\Program Files\7-Zip\7z.exe' x $mcell_zip -o"$cellblender_dir"
