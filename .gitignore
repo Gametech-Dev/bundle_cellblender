@@ -5,6 +5,7 @@ ubuntu_1*/miniconda3
 ubuntu_1*/Miniconda3-latest-Linux-x86_64.sh
 windows/blender-2*-windows64
 windows/cellblender*_bundle_windows.zip
+windows/blender.zip
+windows/master.zip
 blender-git
-blender.zip
 *.swp

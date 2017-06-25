@@ -63,6 +63,7 @@ cd $mcell_build_dir
 gcc -mconsole -std=c99 -O3 -fno-schedule-insns2 -Wall -Wshadow -o mcell.exe *.c 
 mkdir "$cellblender_dir\bin"
 cp "$mcell_build_dir\mcell.exe" "$cellblender_dir\bin"
+# XXX: this line always fails for some reason now...
 rm -Recurse -Force $mcell_build_dir
 rm $mcell_zip
 
@@ -94,14 +95,15 @@ cp -Force -Recurse $config_dir $blender_dir\$bl_version
 # Some cleanup
 rm -Force -Recurse "$cellblender_dir\mcell-$mcell_version"
 rm -Force -Recurse "$project_dir\mcell-$mcell_version"
-rm -Force "$project_dir\v$mcell_version.zip"
+#rm -Force "$project_dir\v$mcell_version.zip"
+rm -Force "project_dir\master.zip"
 rm -Force -Recurse "$cellblender_dir\.git"
 rm -Force "$cellblender_dir\.gitignore"
 rm -Force "$cellblender_dir\.gitmodules"
 rm -Force -Recurse "$cellblender_dir\test_suite"
 
 # Zip up modified blender directory
-$final_zip = "$project_dir\cellblender1.1_bundle_windows.zip"
+$final_zip = "$project_dir\cellblender1.2_bundle_windows.zip"
 & 'C:\Program Files\7-Zip\7z.exe' a -mx=9 $final_zip $blender_dir
 
 cd $project_dir
