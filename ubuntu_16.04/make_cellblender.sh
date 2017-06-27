@@ -21,7 +21,7 @@ mirror1="http://ftp.halifax.rwth-aachen.de/blender/release/Blender$version/$blen
 mirror2="http://ftp.nluug.nl/pub/graphics/blender/release/Blender$version/$blender_bz2";
 mirror3="http://download.blender.org/release/Blender$version/$blender_bz2";
 mirror4="http://www.mcell.org/download/files/$blender_bz2";
-mirrors=($mirror1 $mirror2 $mirror3 $mirror4);
+mirrors=($mirror1 $mirror2 $mirror3);
 random=$(shuf -i 0-3 -n 1);
 
 rm -fr $blender_dir_full
