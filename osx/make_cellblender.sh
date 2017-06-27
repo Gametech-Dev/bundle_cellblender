@@ -9,10 +9,7 @@ set -o verbose
 set -e
 
 version="2.78"
-minor=""
-# I can't get anything newer thatn 2.76b to work in vbox
-#version="2.76"
-#minor="b"
+minor="c"
 project_dir=$(pwd)
 blender_dir="blender-$version$minor-OSX_10.6-x86_64"
 miniconda_dir="$project_dir/miniconda3"
@@ -21,7 +18,7 @@ blender_zip="$blender_dir.zip"
 mirror1="http://ftp.halifax.rwth-aachen.de/blender/release/Blender$version/$blender_zip";
 mirror2="http://ftp.nluug.nl/pub/graphics/blender/release/Blender$version/$blender_zip";
 mirror3="http://download.blender.org/release/Blender$version/$blender_zip";
-mirror4="http://www.mcell.org/download/files/$blender_zip";
+#mirror4="http://www.mcell.org/download/files/$blender_zip";
 mirrors=($mirror1 $mirror2 $mirror3);
 #random=$(shuf -i 0-3 -n 1);
 
@@ -37,18 +34,6 @@ rm -fr $blender_dir_full
 unzip $blender_zip -d $blender_dir_full
 #unzip $blender_zip -d .
 
-# get matplotlib recipe that doesn't use qt
-matplotlib_dir="$project_dir/matplotlib-feedstock"
-if [ ! -d $matplotlib_dir ]
-then
-	git clone https://github.com/jczech/matplotlib-feedstock
-fi
-cd $matplotlib_dir
-git fetch origin
-git reset --hard origin/master
-sed -i '' '14,16d' recipe/meta.yaml
-cd ..
-
 # get miniconda, add custom matplotlib with custom recipe
 miniconda_script="Miniconda3-latest-MacOSX-x86_64.sh"
 if [ ! -f $miniconda_script ]
@@ -63,13 +48,12 @@ fi
 
 cd $miniconda_dir/bin
 PATH=$PATH:$miniconda_dir/bin
-#./conda install -y python=3.4
-./conda install -y conda-build
+if [ ! -d ../envs/cb ]
+then
+  ./conda create -n cb python=3.5.2 numpy scipy matplotlib
+fi
+source ./activate cb
 ./conda install -y -c SBMLTeam python-libsbml
-#./pip install python-libsbml
-./conda install -y nomkl
-./conda build $matplotlib_dir/recipe --numpy 1.11
-./conda install --use-local -y matplotlib
 ./conda clean -y --all
 cd ..
 # Remove pyc file and __pycache__ directories to keep build size down
@@ -78,10 +62,6 @@ find . \( -name \*.pyc -o -name \*.pyo -o -name __pycache__ \) -prune -exec rm -
 # remove existing python, add our new custom version
 cd $blender_dir_full/blender.app/Contents/Resources/$version/
 cp -fr $miniconda_dir/ python/
-
-# cleanup miniconda stuff
-#rm -fr $miniconda_dir
-#rm -fr $project_dir/$matplotlib_dir
 
 # Set up GAMer
 cd $blender_dir_full/blender.app/Contents/Resources/$version
@@ -114,9 +94,10 @@ cd ..
 rm .gitignore
 rm -fr .git
 
-mcell_dir_name="mcell-3.4"
-#mcell_zip_name="master.zip"
-mcell_zip_name="v3.4.zip"
+mcell_dir_name="mcell-master"
+mcell_zip_name="master.zip"
+#mcell_dir_name="mcell-3.4"
+#mcell_zip_name="v3.4.zip"
 # Get and build MCell
 wget https://github.com/mcellteam/mcell/archive/$mcell_zip_name
 unzip $mcell_zip_name
@@ -132,4 +113,4 @@ mkdir bin
 mv mcell bin
 
 cd $project_dir
-zip -r cellblender1.1_bundle_osx.zip $blender_dir
+zip -r cellblender1.2_bundle_osx.zip $blender_dir
