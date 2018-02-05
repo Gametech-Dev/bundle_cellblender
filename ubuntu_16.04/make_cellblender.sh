@@ -8,13 +8,15 @@ set -o verbose
 # Quit if there's an error
 set -e
 
-version="2.78"
-minor="c"
+version="2.79"
+minor=""
 glibc="219"
 project_dir=$(pwd)
 blender_dir="blender-$version$minor-linux-glibc$glibc-x86_64"
 miniconda_bins="$project_dir/miniconda3/bin"
 blender_dir_full="$project_dir/blender-$version$minor-linux-glibc$glibc-x86_64"
+addon_dir_full="$blender_dir_full/$version/scripts/addons/"
+cellblender_dir_full="$addon_dir_full/cellblender"
 blender_tar="$blender_dir.tar"
 blender_bz2="$blender_tar.bz2"
 mirror1="http://ftp.halifax.rwth-aachen.de/blender/release/Blender$version/$blender_bz2";
@@ -27,8 +29,8 @@ random=$(shuf -i 0-3 -n 1);
 rm -fr $blender_dir_full
 
 # Grab Blender and extract it
-selected_mirror=${mirrors[$random]}
-#selected_mirror=${mirrors[3]}
+#selected_mirror=${mirrors[$random]}
+selected_mirror=${mirrors[0]}
 if [ ! -f $blender_tar ]
 then
 	wget $selected_mirror
@@ -55,6 +57,7 @@ then
 fi
 source ./activate cb
 ./conda install -y -c SBMLTeam python-libsbml
+./conda install lxml
 ./conda clean -y --all
 
 # remove existing python, add our new custom version
@@ -79,46 +82,51 @@ make install
 cd ..
 rm -fr gamer
 
-# Set up CellBlender
 # Adding userpref.blend so that CB is enabled by default and startup.blend to
 # give user a better default layout.
 cd $project_dir
-cp -fr ../config $blender_dir/$version
-cd $blender_dir_full/$version/scripts/addons
-git clone https://github.com/mcellteam/cellblender
+cp -fr ../config $blender_dir_full/$version
+
+# Set up CellBlender
+if [ ! -d cellblender ]
+then
+  git clone https://github.com/mcellteam/cellblender
+fi
 cd cellblender
 git checkout development
-git submodule init
-git submodule update
 # These changes seem to be needed for the versions of python and gcc that come
 # with ubuntu.
 sed -i 's/python3\.4/python3/' io_mesh_mcell_mdl/makefile
-#sed -i 's/gcc \(-lGL -lglut -lGLU\) \(-o SimControl SimControl.o\)/gcc \2 \1/' makefile
 make
+
+# Clean up CellBlender
+cd $project_dir
+cp -fr cellblender $addon_dir_full
+cd $cellblender_dir_full
 rm cellblender.zip
 rm cellblender
 rm .gitignore
 rm -fr .git
 
-mcell_dir_name="mcell-master"
-mcell_zip_name="master.zip"
-#mcell_dir_name="mcell-3.4"
-#mcell_zip_name="v3.4.zip"
-# Get and build MCell
-wget https://github.com/mcellteam/mcell/archive/$mcell_zip_name
-unzip $mcell_zip_name
+# Build mcell
+cd $project_dir
+mcell_dir_name="mcell"
+if [ ! -d mcell ]
+then
+  git clone https://github.com/mcellteam/mcell
+fi
 cd $mcell_dir_name
+git checkout nfsim_dynamic_meshes_pymcell
+git pull
 export CC=/usr/bin/clang
 sed -i 's:-O2:-O3:g' CMakeLists.txt
-mkdir build
+mkdir -p build
 cd build
+git submodule init
+git submodule update
 cmake ..
 make
-mv mcell ../..
-cd ../..
-rm -fr $mcell_dir_name $mcell_zip_name
-mkdir bin
-mv mcell bin
+cp -fr mcell *.py lib bng2 $cellblender_dir_full/extensions
 
 cd $project_dir
 zip -r cellblender1.2_bundle_linux.zip $blender_dir
