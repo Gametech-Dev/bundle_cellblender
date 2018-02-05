@@ -129,4 +129,5 @@ make
 cp -fr mcell *.py lib bng2 $cellblender_dir_full/extensions
 
 cd $project_dir
-zip -r cellblender1.2_bundle_linux.zip $blender_dir
+mv $blender_dir cellblender1.2_bundle
+zip -r cellblender1.2_bundle_linux.zip cellblender1.2_bundle
