@@ -105,8 +105,8 @@ cp -fr cellblender $addon_dir_full
 cd $cellblender_dir_full
 rm cellblender.zip
 rm cellblender
-rm .gitignore
-rm -fr .git
+#rm .gitignore
+#rm -fr .git
 
 # Build mcell
 cd $project_dir
@@ -130,4 +130,4 @@ cp -fr mcell *.py lib bng2 $cellblender_dir_full/extensions
 
 cd $project_dir
 mv $blender_dir cellblender1.2_bundle
-zip -r cellblender1.2_bundle_linux.zip cellblender1.2_bundle
+tar -cjf cellblender1.2_bundle_linux.bz2 cellblender1.2_bundle
