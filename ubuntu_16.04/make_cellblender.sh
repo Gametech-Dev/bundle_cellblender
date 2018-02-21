@@ -13,7 +13,7 @@ minor=""
 glibc="219"
 project_dir=$(pwd)
 blender_dir="blender-$version$minor-linux-glibc$glibc-x86_64"
-miniconda_bins="$project_dir/miniconda3/bin"
+python_ver="3.5.2"
 blender_dir_full="$project_dir/blender-$version$minor-linux-glibc$glibc-x86_64"
 addon_dir_full="$blender_dir_full/$version/scripts/addons/"
 cellblender_dir_full="$addon_dir_full/cellblender"
@@ -38,40 +38,34 @@ then
 fi
 tar xf $blender_tar
 
-# get miniconda
-miniconda_script="Miniconda3-latest-Linux-x86_64.sh"
-if [ ! -f $miniconda_script ]
+python_tarball="Python-$python_ver.tar.xz"
+python_src_dir="$project_dir/Python-$python_ver"
+python_build_dir="$project_dir/python_build_$python_ver"
+cd $project_dir
+if [ ! -f $python_tarball ]
 then
-	wget https://repo.continuum.io/miniconda/$miniconda_script
+  wget https://www.python.org/ftp/python/$python_ver/$python_tarball
 fi
 
-if [ ! -d ./miniconda3 ]
+if [ ! -d $python_src_dir ]
 then
-	bash $miniconda_script -b -p ./miniconda3
+  tar xf $python_tarball
 fi
-cd $miniconda_bins
-PATH=$PATH:$miniconda_bins
-if [ ! -d ../envs/cb ]
-then
-  ./conda create -n cb python=3.5.2 numpy scipy matplotlib
-fi
-source ./activate cb
-./conda install -y -c SBMLTeam python-libsbml
-./conda install lxml
-./conda clean -y --all
+
+mkdir -p $python_build_dir
+cd $python_src_dir
+./configure --prefix=$python_build_dir
+make
+make install
+
+cd $python_build_dir/bin
+./pip3 install --ignore-installed numpy scipy matplotlib lxml python-libsbml
 
 # remove existing python, add our new custom version
 cd $blender_dir_full/$version
 rm -fr python
-mkdir -p python/bin
-cp ../../miniconda3/envs/cb/bin/python3.5m python/bin
-cp -fr ../../miniconda3/envs/cb/lib python
-find . -type f -name "*.pyc" -delete
-find . -type d -name "__pycache__" -delete
-
-# cleanup miniconda stuff
-#rm -fr ../../miniconda3
-#rm ../../Miniconda3-latest-Linux-x86_64.sh
+mkdir -p python
+cp -fr $python_build_dir/* $blender_dir_full/$version/python
 
 # Set up GAMer
 cd $blender_dir_full/$version
@@ -94,6 +88,7 @@ then
 fi
 cd cellblender
 git checkout development
+git pull
 # These changes seem to be needed for the versions of python and gcc that come
 # with ubuntu.
 sed -i 's/python3\.4/python3/' io_mesh_mcell_mdl/makefile
@@ -129,5 +124,6 @@ make
 cp -fr mcell *.py lib bng2 $cellblender_dir_full/extensions
 
 cd $project_dir
-mv $blender_dir cellblender1.2_bundle
-tar -cjf cellblender1.2_bundle_linux.bz2 cellblender1.2_bundle
+blender_dir_new=Blender-$version-CellBlender
+mv $blender_dir $blender_dir_new
+tar -cjf $blender_dir_new.Linux.bz2 $blender_dir_new
